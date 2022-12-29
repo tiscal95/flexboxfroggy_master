@@ -3,6 +3,9 @@ var game = {
   language: window.location.hash.substring(1) || 'en',
   difficulty: 'easy',
   level: parseInt(localStorage.level, 10) || 0,
+  attempts: (localStorage.attempts && JSON.parse(localStorage.attempts)) || {},
+  times: (localStorage.times && JSON.parse(localStorage.times)) || {},
+  points: (localStorage.points && JSON.parse(localStorage.points)) || {},
   answers: (localStorage.answers && JSON.parse(localStorage.answers)) || {},
   solved: (localStorage.solved && JSON.parse(localStorage.solved)) || [],
   user: localStorage.user || '',
@@ -35,11 +38,24 @@ var game = {
     game.loadLevel(levels[game.level]);
   },
 
+  // set event handerls
   setHandlers: function() {
+    $('#check').on('click', function() {
+      game.check();
+      if ($('#next').hasClass('disabled')) {
+        if (!$('.frog').hasClass('animated')) {
+          game.tryagain();
+        }
+
+        return;
+      }
+    });
+
+    // next button in code field -> next level
     $('#next').on('click', function() {
       $('#code').focus();
 
-      if ($(this).hasClass('disabled')) {
+      if ($('#next').hasClass('disabled')) {
         if (!$('.frog').hasClass('animated')) {
           game.tryagain();
         }
@@ -47,7 +63,7 @@ var game = {
         return;
       }
 
-      $(this).removeClass('animated animation');
+      $(this).removeClass('animated animation'); 
       $('.frog').addClass('animated bounceOutUp');
       $('.arrow, #next').addClass('disabled');
 
@@ -60,6 +76,7 @@ var game = {
       }, 2000);
     });
 
+    // press enter -> next button in code field -> next level
     $('#code').on('keydown', function(e) {
       if (e.keyCode === 13) {
 
@@ -69,7 +86,7 @@ var game = {
           $('#next').click();
           return;
         }
-
+        // distinguish level submission or enter
         var max = $(this).data('lines');
         var code = $(this).val();
         var trim = code.trim();
@@ -86,16 +103,18 @@ var game = {
           }
         }
       }
-    }).on('input', game.debounce(game.check, 500))
+    })
     .on('input', function() {
       game.changed = true;
       $('#next').removeClass('animated animation').addClass('disabled');
     });
 
+    // ??
     $('#editor').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
       $(this).removeClass();
     });
 
+    // if game is reset
     $('#labelReset').on('click', function() {
       var warningReset = messages.warningReset[game.language] || messages.warningReset.en;
       var r = confirm(warningReset);
@@ -110,16 +129,19 @@ var game = {
       }
     });
 
+    // if settings are opened/ close, show/ hide level submenu
     $('#labelSettings').on('click', function() {
       $('#levelsWrapper').hide();
       $('#settings .tooltip').toggle();
       $('#instructions .tooltip').remove();
     })
 
+    // update link/ location when language is changed
     $('#language').on('change', function() {
       window.location.hash = $(this).val();
     });
 
+    // change difficulty to the checked radio button when difficulty is changed
     $('#difficulty').on('change', function() {
       game.difficulty = $('input:checked', '#difficulty').val();
 
@@ -153,6 +175,7 @@ var game = {
       }
     });
 
+    // change colorblind mode to the checked radio button when colorblind mode is changed
     $('#colorblind').on('change', function() {
       game.colorblind = $('input:checked', '#colorblind').val();
 
@@ -163,15 +186,18 @@ var game = {
       }
     });
 
+    // close tooltip (level or settings) when clicked outside of them
     $('body').on('click', function() {
       $('.tooltip').hide();
       clickedCode = null;
     });
 
+    // stops further propagation when clicked on tooltip links
     $('.tooltip, .toggle, #level-indicator').on('click', function(e) {
       e.stopPropagation();
     });
 
+    // save game stats before closing page
     $(window).on('beforeunload', function() {
       game.saveAnswer();
       localStorage.setItem('level', game.level);
@@ -197,6 +223,7 @@ var game = {
     });
   },
 
+  // navigate to previous level
   prev: function() {
     this.level--;
 
@@ -204,6 +231,7 @@ var game = {
     this.loadLevel(levelData);
   },
 
+  // navigate to next level
   next: function() {
     if (this.difficulty === "hard") {
       this.level = Math.floor(Math.random()* levels.length)
@@ -215,6 +243,7 @@ var game = {
     this.loadLevel(levelData);
   },
 
+  // load level menu
   loadMenu: function() {
     levels.forEach(function(level, i) {
       var levelMarker = $('<span/>').addClass('level-marker').attr({'data-level': i, 'title': level.name}).text(i+1);
@@ -226,6 +255,7 @@ var game = {
       levelMarker.appendTo('#levels');
     });
 
+    // save answer when clicking on level in level menu and load clicked level
     $('.level-marker').on('click', function() {
       game.saveAnswer();
 
@@ -234,12 +264,14 @@ var game = {
       game.loadLevel(levels[level]);
     });
 
+    // open or close level menu when clicking on level indicator/ heading
     $('#level-indicator').on('click', function() {
       $('#settings .tooltip').hide();
       $('#levelsWrapper').toggle();
       $('#instructions .tooltip').remove();
     });
 
+    // save answer and load previous level when clicking on left arrow
     $('.arrow.left').on('click', function() {
       if ($(this).hasClass('disabled')) {
         return;
@@ -249,6 +281,7 @@ var game = {
       game.prev();
     });
 
+    // save answer and load next level when clicking on left arrow
     $('.arrow.right').on('click', function() {
       if ($(this).hasClass('disabled')) {
         return;
@@ -259,6 +292,7 @@ var game = {
     });
   },
 
+  // load and set up level
   loadLevel: function(level) {
     $('#editor').show();
     $('#share').hide();
@@ -270,9 +304,11 @@ var game = {
     $('#after').text(level.after);
     $('#next').removeClass('animated animation').addClass('disabled');
 
+    // load instructions
     var instructions = level.instructions[game.language] || level.instructions.en;
     $('#instructions').html(instructions);
 
+    // disable arrow if 1st or last level
     $('.arrow.disabled').removeClass('disabled');
 
     if (this.level === 0) {
@@ -283,6 +319,7 @@ var game = {
       $('.arrow.right').addClass('disabled');
     }
 
+    // get answer if any and set focus on answer input
     var answer = game.answers[level.name];
     $('#code').val(answer).focus();
 
@@ -299,6 +336,7 @@ var game = {
       'y': 'yellow'
     };
 
+    // attribute lilypad and frogs their colors according to level board
     for (var i = 0; i < string.length; i++) {
       var c = string.charAt(i);
       var color = colors[c];
@@ -313,6 +351,7 @@ var game = {
       $('#pond').append(frog);
     }
 
+    // add classes for levels
     var classes = level.classes;
 
     if (classes) {
@@ -379,6 +418,7 @@ var game = {
     });
   },
 
+  // apply styles to elements (level setup)
   applyStyles: function() {
     var level = levels[game.level];
     var code = $('#code').val();
@@ -387,6 +427,7 @@ var game = {
     game.saveAnswer();
   },
 
+  // check if level successfully solved
   check: function() {
     game.applyStyles();
 
@@ -395,6 +436,7 @@ var game = {
     var frogs = {};
     var correct = true;
 
+    // save frog color on position
     $('.frog').each(function() {
       var position = $(this).position();
       position.top = Math.floor(position.top);
@@ -405,6 +447,7 @@ var game = {
       frogs[key] = val;
     });
 
+    // compare if lilypad color position is same as frog color position 
     $('.lilypad').each(function() {
       var position = $(this).position();
       position.top = Math.floor(position.top);
@@ -418,6 +461,7 @@ var game = {
       }
     });
 
+    // if correct true -> level solved
     if (correct) {
       ga('send', {
         hitType: 'event',
@@ -426,6 +470,7 @@ var game = {
         eventLabel: $('#code').val()
       });
 
+      // if level not previously solved, save in solved array
       if ($.inArray(level.name, game.solved) === -1) {
         game.solved.push(level.name);
       }
@@ -445,15 +490,18 @@ var game = {
     }
   },
 
+  // save answer in array
   saveAnswer: function() {
     var level = levels[this.level];
     game.answers[level.name] = $('#code').val();
   },
 
+  // shake code field if wrong answer
   tryagain: function() {
     $('#editor').addClass('animated shake');
   },
 
+  // when all game levels solved
   win: function() {
     var solution = $('#code').val();
 

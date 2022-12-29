@@ -393,11 +393,19 @@ button:not(.disabled):hover {
   background-color: #F12D22;
 }
 
-#next {
+#editor-buttons {
   position: absolute;
   right: 1em;
   bottom: 1em;
+}
+
+#next, #check {
   padding-top: 0.3em;
+}
+
+#check {
+  background-color: #298a2b
+  ;
 }
 
 .animation {
