@@ -25,7 +25,7 @@
           <h1 class="title">Flexbox Froggy</h1>
         </div>
         <div id="level-counter">
-          <span class="arrow left">
+          <span class="arrow left" style="display: none;">
             <span class="triangle"></span>
           </span>
           <span id="level-indicator">
@@ -35,13 +35,20 @@
             <span class="total">1</span>
             <span class="caret">▾</span>
           </span>
-          <span class="arrow right">
+          <span class="arrow right" style="display: none;">
             <span class="triangle"></span>
           </span>
           <div id="levelsWrapper" class="tooltip">
             <div id="levels"></div>
             <div id="labelReset" class="translate">Reset</div>
           </div>
+        </div>
+        <div id="time-counter">
+          <span id="time-indicator">
+            <span id="minutes">00</span> :
+            <span id="second">00</span> :
+            <span id="milisecond">00</span>
+          </span>
         </div>
       </div>
       <p id="instructions"></p>
@@ -84,10 +91,6 @@
       <div class="bsa-custom"></div>
 
       <div class="credits">
-        <span id="labelFooter" class="translate">Flexbox Froggy is created by</span>
-        <a href="https://codepip.com">Codepip</a> •
-        <a href="https://github.com/thomaspark/flexboxfroggy/">GitHub</a> •
-        <a href="https://twitter.com/playcodepip">Twitter</a> •
         <span id="settings">
           <span id="labelSettings" class="toggle translate">Settings</span>
           <span class="tooltip">
@@ -95,64 +98,8 @@
               <h4 id="labelLanguage" class="translate">Language</h4>
               <select id="language">
                 <option value="en">English</option>
-                <option value="es">Español</option>
-                <option value="fr">Français</option>
                 <option value="de">Deutsch</option>
-                <option value="nl">Nederlands</option>
-                <option value="pt-br">Português</option>
-                <option value="ca">Català</option>
-                <option value="gl">Galego</option>
-                <option value="it">Italiano</option>
-                <option value="sv">Svenska</option>
-                <option value="fi">Suomi</option>
-                <option value="da">Dansk</option>
-                <option value="pl">Polski</option>
-                <option value="cs">Česky</option>
-                <option value="hu">Magyar</option>
-                <option value="ro">Română</option>
-                <option value="bg">Български</option>
-                <option value="et">Eesti</option>
-                <option value="lv">Latviešu</option>
-                <option value="lt">Lietuvių</option>
-                <option value="uk">Українська</option>
-                <option value="ru">Русский</option>
-                <option value="sr">Српски</option>
-                <option value="bs">Bosanski</option>
-                <option value="mk">Македонски</option>
-                <option value="el">Ελληνικά</option>
-                <option value="tr">Türkçe</option>
-                <option value="he">עברית</option>
-                <option value="ar">العربية</option>
-                <option value="fa">فارسی</option>
-                <option value="hi">हिंदी</option>
-                <option value="te">తెలుగు</option>
-                <option value="ta">தமிழ்</option>
-                <option value="ml">മലയാളം</option>
-                <option value="zh-cn">简体中文</option>
-                <option value="zh-tw">繁體中文</option>
-                <option value="ja">日本語</option>
-                <option value="ko">한국어</option>
-                <option value="vi">Tiếng Việt</option>
-                <option value="id">Bahasa Indonesia</option>
-                <option value="eo">Esperanto</option>
               </select>
-            </section>
-            <section>
-              <h4 id="labelDifficulty" class="translate">Difficulty</h4>
-              <form id="difficulty">
-                <div>
-                  <input type="radio" name="difficulty" id="difficultyEasy" value="easy" checked>
-                  <label id="labelDifficultyEasy" for="difficultyEasy" class="translate">Beginner</label>
-                </div>
-                <div>
-                  <input type="radio" name="difficulty" id="difficultyMedium" value="medium">
-                  <label id="labelDifficultyMedium" for="difficultyMedium" class="translate">Intermediate - No Directions</label>
-                </div>
-                <div>
-                  <input type="radio" name="difficulty" id="difficultyHard" value="hard">
-                  <label id="labelDifficultyHard" for="difficultyHard" class="translate">Expert - No Directions &amp; Random Levels</label>
-                </div>
-              </form>
             </section>
             <section>
               <h4 id="labelColorblind" class="translate">Colorblind Mode</h4>
@@ -170,9 +117,6 @@
             </section>
           </span>
         </span>
-      </div>
-      <div class="credits">
-        <span id="gridGarden" class="translate">Want to learn CSS grid? Play</span> <a href="https://codepip.com/games/grid-garden/">Grid Garden</a>.
       </div>
     </section>
     <section id="view">

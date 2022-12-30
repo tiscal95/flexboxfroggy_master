@@ -1,11 +1,21 @@
 var game = {
+  //stopwatch
+  minutes: document.querySelector("#minutes"),
+  second: document.querySelector("#second"),
+  milisecond: document.querySelector("#milisecond"),
+  intervalId: null,
+
+  levelStartTime: null,
+  levelEndTime: null,
+  levelTimes: (localStorage.levelTimes && JSON.parse(localStorage.levelTimes)) || {},
+  // additions
+  attempts: (localStorage.attempts && JSON.parse(localStorage.attempts)) || {},
+  points: (localStorage.points && JSON.parse(localStorage.points)) || {},
+  //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
   language: window.location.hash.substring(1) || 'en',
   difficulty: 'easy',
   level: parseInt(localStorage.level, 10) || 0,
-  attempts: (localStorage.attempts && JSON.parse(localStorage.attempts)) || {},
-  times: (localStorage.times && JSON.parse(localStorage.times)) || {},
-  points: (localStorage.points && JSON.parse(localStorage.points)) || {},
   answers: (localStorage.answers && JSON.parse(localStorage.answers)) || {},
   solved: (localStorage.solved && JSON.parse(localStorage.solved)) || [],
   user: localStorage.user || '',
@@ -36,11 +46,13 @@ var game = {
     this.setHandlers();
     this.loadMenu();
     game.loadLevel(levels[game.level]);
+    game.levelStartTimer();
   },
 
   // set event handerls
   setHandlers: function() {
     $('#check').on('click', function() {
+      game.makeAttempt()
       game.check();
       if ($('#next').hasClass('disabled')) {
         if (!$('.frog').hasClass('animated')) {
@@ -66,6 +78,7 @@ var game = {
       $(this).removeClass('animated animation'); 
       $('.frog').addClass('animated bounceOutUp');
       $('.arrow, #next').addClass('disabled');
+      $('#check').removeClass('disabled');
 
       setTimeout(function() {
         if (game.level >= levels.length - 1) {
@@ -241,6 +254,7 @@ var game = {
 
     var levelData = levels[this.level];
     this.loadLevel(levelData);
+    game.levelStartTimer();
   },
 
   // load level menu
@@ -463,6 +477,8 @@ var game = {
 
     // if correct true -> level solved
     if (correct) {
+      game.levelEndTimer();
+      game.saveLevelTime();
       ga('send', {
         hitType: 'event',
         eventCategory: level.name,
@@ -477,6 +493,8 @@ var game = {
 
       $('[data-level=' + game.level + ']').addClass('solved');
       $('#next').removeClass('disabled').addClass('animated animation');
+      $('#check').addClass('disabled')
+
     } else {
       ga('send', {
         hitType: 'event',
@@ -494,6 +512,28 @@ var game = {
   saveAnswer: function() {
     var level = levels[this.level];
     game.answers[level.name] = $('#code').val();
+  },
+
+  makeAttempt: function() {
+    var level = levels[this.level];
+    game.attempts[level.name] = game.attempts[level.name] && (game.attempts[level.name] + 1) || 1;
+  },
+
+  levelStartTimer: function() {
+    game.intervalId = setInterval(game.timeCounting, 10);
+    game.levelStartTime = new Date();
+  },
+
+  levelEndTimer: function() {
+    game.levelEndTime = new Date();
+    game.intervalId && clearInterval(game.intervalId);
+  },
+
+  saveLevelTime: function() {
+    var level = levels[this.level];
+    game.levelTimes[level.name] = ((game.levelEndTime.getTime() - game.levelStartTime.getTime())/ 1000);
+    game.levelStartTime = null;
+    game.levelEndTime = null;
   },
 
   // shake code field if wrong answer
@@ -590,6 +630,26 @@ var game = {
 
     $('#code').val(content);
     $('#code').focus();
+  },
+
+  timeCounting: function() {
+    const timeElapsed = (new Date().getTime() - game.levelStartTime.getTime());
+
+    let milisecondCounter = Math.floor((timeElapsed % 1000)/10);
+    let secondCounter = Math.floor((timeElapsed / 1000) % 60);
+    let minutesCounter = Math.floor(((timeElapsed / (1000*60)) % 60));
+  
+    if (milisecondCounter < 10) {
+      game.milisecond.textContent = "0" + milisecondCounter;
+    } else game.milisecond.textContent = milisecondCounter;
+  
+    if (secondCounter < 10) {
+      game.second.textContent = "0" + secondCounter;
+    } else game.second.textContent = secondCounter;
+  
+    if (minutesCounter < 10) {
+      game.minutes.textContent = "0" + minutesCounter;
+    } else game.minutes.textContent = minutesCounter;
   }
 };
 

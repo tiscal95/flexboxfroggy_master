@@ -234,7 +234,7 @@ pre {
   overflow: auto;
 }
 
-#level-counter {
+#level-counter, #time-counter {
   position: relative;
   display: inline-block;
   height: 30px;
@@ -277,7 +277,7 @@ pre {
   border: 2px solid transparent;
   border-radius: 50%;
   text-align: center;
-  cursor: pointer;
+  pointer-events: none;
 }
 
 .level-marker.current,
@@ -296,12 +296,17 @@ pre {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-#level-indicator {
+#level-indicator, #time-indicator {
   display: inline-block;
   width: 160px;
   line-height: 30px;
   text-align: center;
   cursor: pointer;
+}
+
+#time-indicator {
+  pointer-events: none;
+  background-color: rgba(255, 255, 255, 0.2);
 }
 
 #labelLevel {
@@ -389,8 +394,12 @@ button:active {
   outline: none;
 }
 
-button:not(.disabled):hover {
+button#next:not(.disabled):hover {
   background-color: #F12D22;
+}
+
+button#check:not(.disabled):hover {
+  background-color: #3fa142;
 }
 
 #editor-buttons {
@@ -412,8 +421,9 @@ button:not(.disabled):hover {
   animation: tada 1s, pulse 2s infinite 2s;
 }
 
-#next.disabled {
+#check.disabled, #next.disabled {
   opacity: 0.5;
+  pointer-events: none;
 }
 
 .credits {
