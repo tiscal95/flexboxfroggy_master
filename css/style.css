@@ -53,6 +53,13 @@ body {
   justify-content: space-between;
 }
 
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  justify-content: space-between;
+}
+
 .title {
   margin: 0.5rem 0 0;
   text-transform: uppercase;
@@ -235,6 +242,7 @@ pre {
 }
 
 #level-counter, #time-counter {
+  flex-grow: 1;
   position: relative;
   display: inline-block;
   height: 30px;
@@ -298,7 +306,7 @@ pre {
 
 #level-indicator, #time-indicator {
   display: inline-block;
-  width: 160px;
+  width: 100%;
   line-height: 30px;
   text-align: center;
   cursor: pointer;
@@ -632,6 +640,12 @@ button#check:not(.disabled):hover {
 
   .header {
     justify-content: center;
+    flex-direction: column;
+  }
+
+  .stats {
+    justify-content: center;
+    flex-direction: row;
   }
 
   .title {

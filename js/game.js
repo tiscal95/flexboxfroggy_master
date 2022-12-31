@@ -1,15 +1,12 @@
 var game = {
   //stopwatch
-  minutes: document.querySelector("#minutes"),
-  second: document.querySelector("#second"),
-  milisecond: document.querySelector("#milisecond"),
   intervalId: null,
-
   levelStartTime: null,
   levelEndTime: null,
   levelTimes: (localStorage.levelTimes && JSON.parse(localStorage.levelTimes)) || {},
   // additions
   attempts: (localStorage.attempts && JSON.parse(localStorage.attempts)) || {},
+  pointsIndicator: document.querySelector("#points"),
   points: (localStorage.points && JSON.parse(localStorage.points)) || {},
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
@@ -217,6 +214,10 @@ var game = {
       localStorage.setItem('answers', JSON.stringify(game.answers));
       localStorage.setItem('solved', JSON.stringify(game.solved));
       localStorage.setItem('colorblind', JSON.stringify(game.colorblind));
+      // additional
+      localStorage.setItem('points', JSON.stringify(game.points));
+      localStorage.setItem('attempts', JSON.stringify(game.attempts));
+      localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
     }).on('hashchange', function() {
       game.language = window.location.hash.substring(1) || 'en';
       game.translate();
@@ -336,6 +337,9 @@ var game = {
     // get answer if any and set focus on answer input
     var answer = game.answers[level.name];
     $('#code').val(answer).focus();
+
+    // get points if any
+    $('#points').html(game.totalPoints())
 
     this.loadDocs();
 
@@ -478,7 +482,6 @@ var game = {
     // if correct true -> level solved
     if (correct) {
       game.levelEndTimer();
-      game.saveLevelTime();
       ga('send', {
         hitType: 'event',
         eventCategory: level.name,
@@ -489,6 +492,8 @@ var game = {
       // if level not previously solved, save in solved array
       if ($.inArray(level.name, game.solved) === -1) {
         game.solved.push(level.name);
+        game.savePoints();
+        game.saveLevelTime();
       }
 
       $('[data-level=' + game.level + ']').addClass('solved');
@@ -506,6 +511,42 @@ var game = {
       game.changed = true;
       $('#next').removeClass('animated animation').addClass('disabled');
     }
+  },
+
+  savePoints: function() {
+    var level = levels[this.level];
+    let pointsTemp = level.maxPoints;
+    const timePoints = function() {
+      let timePointsTemp = pointsTemp/2;
+      let elapsedTimeSeconds = ((game.levelEndTime.getTime() - game.levelStartTime.getTime())/ 1000)
+      if(elapsedTimeSeconds < level.maxTimeIntervals[0]) {
+        return timePointsTemp
+      } else if (elapsedTimeSeconds > level.maxTimeIntervals[0] && elapsedTimeSeconds < level.maxTimeIntervals[1]) {
+        return timePointsTemp*0.75
+      } else if (elapsedTimeSeconds > level.maxTimeIntervals[1] && elapsedTimeSeconds < level.maxTimeIntervals[2]) {
+        return timePointsTemp*0.5
+      } else if (elapsedTimeSeconds > level.maxTimeIntervals[2] && elapsedTimeSeconds < level.maxTimeIntervals[3]) {
+        return timePointsTemp*0.25
+      } else {
+        return 0;
+      };
+    }
+    const attemptsPoints = function() {
+      let attemptsPointsTemp = pointsTemp/2;
+      let attemptsTemp = game.attempts[level.name];
+      if(attemptsTemp < 5) {
+        return attemptsPointsTemp/(attemptsTemp%5)
+      } else {
+        return 0;
+      }
+    }
+    const totalLevelPoints = timePoints() + attemptsPoints();
+    game.points[level.name] = Math.floor(totalLevelPoints*10)/10;
+    game.pointsIndicator.textContent = game.totalPoints()
+  },
+
+  totalPoints: function() {
+    return Object.values(game.points).reduce((a, b) => a + b, 0);
   },
 
   // save answer in array
@@ -527,6 +568,7 @@ var game = {
   levelEndTimer: function() {
     game.levelEndTime = new Date();
     game.intervalId && clearInterval(game.intervalId);
+    return;
   },
 
   saveLevelTime: function() {
@@ -640,16 +682,16 @@ var game = {
     let minutesCounter = Math.floor(((timeElapsed / (1000*60)) % 60));
   
     if (milisecondCounter < 10) {
-      game.milisecond.textContent = "0" + milisecondCounter;
-    } else game.milisecond.textContent = milisecondCounter;
+      $('#milisecond').html("0" + milisecondCounter);
+    } else $('#milisecond').html(milisecondCounter);
   
     if (secondCounter < 10) {
-      game.second.textContent = "0" + secondCounter;
-    } else game.second.textContent = secondCounter;
+      $('#second').html("0" + secondCounter);
+    } else $('#second').html(secondCounter);
   
     if (minutesCounter < 10) {
-      game.minutes.textContent = "0" + minutesCounter;
-    } else game.minutes.textContent = minutesCounter;
+      $('#minutes').html("0" + minutesCounter);
+    } else $('#minutes').html(minutesCounter);
   }
 };
 
