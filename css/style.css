@@ -241,7 +241,7 @@ pre {
   overflow: auto;
 }
 
-#level-counter, #time-counter {
+#level-counter, #time-counter, #points-counter {
   flex-grow: 1;
   position: relative;
   display: inline-block;
@@ -304,7 +304,7 @@ pre {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-#level-indicator, #time-indicator {
+#level-indicator, #time-indicator, #points-indicator {
   display: inline-block;
   width: 100%;
   line-height: 30px;
@@ -313,6 +313,13 @@ pre {
 }
 
 #time-indicator {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+#points-indicator {
   pointer-events: none;
   background-color: rgba(255, 255, 255, 0.2);
 }
@@ -425,11 +432,36 @@ button#check:not(.disabled):hover {
   ;
 }
 
+#pause {
+  background-color: black;
+  ;
+}
+
+#pause-screen, #start-screen {
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+}
+
+#screen-instructions {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 1em;
+  color: #fff;
+}
+
 .animation {
   animation: tada 1s, pulse 2s infinite 2s;
 }
 
-#check.disabled, #next.disabled {
+#check.disabled, #next.disabled, #pause.disabled {
   opacity: 0.5;
   pointer-events: none;
 }
@@ -657,6 +689,10 @@ button#check:not(.disabled):hover {
   }
 }
 
+.d-none {
+  display: none !important;
+}
+
 /* Native by BuySellAds */
 .native-ad {
   display: block;
@@ -689,4 +725,3 @@ button#check:not(.disabled):hover {
   font-weight: 600;
   line-height: 1;
 }
-

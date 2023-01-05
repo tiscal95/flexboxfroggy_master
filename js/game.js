@@ -1,12 +1,26 @@
+const firebaseConfig = {
+  apiKey: "AIzaSyAKqE7MdhOnRzXyjtP2wQxQ_iR73h0IAAs",
+  authDomain: "flexboxfroggymaster.firebaseapp.com",
+  projectId: "flexboxfroggymaster",
+  storageBucket: "flexboxfroggymaster.appspot.com",
+  messagingSenderId: "604293471792",
+  appId: "1:604293471792:web:8f008684257e389b6b57f5"
+};
+
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
 var game = {
   //stopwatch
-  intervalId: null,
-  levelStartTime: null,
-  levelEndTime: null,
+  intervalId: -1,
+  levelMiliseconds: 0,
+  pageStartTimes: (localStorage.pageStartTimes && JSON.parse(localStorage.pageStartTimes)) || {},
+  pageEndTimes: (localStorage.pageEndTimes && JSON.parse(localStorage.pageEndTimes)) || {},
+  pageTimes: (localStorage.pageTimes && JSON.parse(localStorage.pageTimes)) || {},
   levelTimes: (localStorage.levelTimes && JSON.parse(localStorage.levelTimes)) || {},
   // additions
   attempts: (localStorage.attempts && JSON.parse(localStorage.attempts)) || {},
-  pointsIndicator: document.querySelector("#points"),
   points: (localStorage.points && JSON.parse(localStorage.points)) || {},
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
@@ -39,15 +53,23 @@ var game = {
       game.user = '' + (new Date()).getTime() + Math.random().toString(36).slice(1);
       localStorage.setItem('user', game.user);
     }
-
     this.setHandlers();
     this.loadMenu();
     game.loadLevel(levels[game.level]);
-    game.levelStartTimer();
   },
 
   // set event handerls
   setHandlers: function() {
+    $('#start').on('click', function() {
+      var level = levels[game.level];
+      game.levelMiliseconds = level.maxTime * 1000;
+      game.intervalId == -1 && game.levelStartTimer();
+    });
+
+    $('.pause').on('click', function() {
+      game.intervalId != -1 ? game.levelEndTimer() : game.levelStartTimer();
+    });
+
     $('#check').on('click', function() {
       game.makeAttempt()
       game.check();
@@ -55,7 +77,6 @@ var game = {
         if (!$('.frog').hasClass('animated')) {
           game.tryagain();
         }
-
         return;
       }
     });
@@ -72,10 +93,12 @@ var game = {
         return;
       }
 
+      var level = levels[game.level];
+      game.pageEndTimes[level.name] = new Date();
+      game.pageTimes[level.name] = game.pageEndTimes[level.name] - game.pageStartTimes[level.name]
       $(this).removeClass('animated animation'); 
       $('.frog').addClass('animated bounceOutUp');
-      $('.arrow, #next').addClass('disabled');
-      $('#check').removeClass('disabled');
+      $('#next').addClass('disabled');
 
       setTimeout(function() {
         if (game.level >= levels.length - 1) {
@@ -133,8 +156,17 @@ var game = {
         game.level = 0;
         game.answers = {};
         game.solved = [];
-        game.loadLevel(levels[0]);
+        // additions
+        game.intervalId = null;
+        game.levelMiliseconds = 0;
+        game.pageStartTimes = {};
+        game.pageEndTimes = {};
+        game.pageTimes = {};
+        game.levelTimes = {};
+        game.attempts = {};
+        game.points = {};
 
+        game.loadLevel(levels[0]);
         $('.level-marker').removeClass('solved');
       }
     });
@@ -199,7 +231,7 @@ var game = {
     // close tooltip (level or settings) when clicked outside of them
     $('body').on('click', function() {
       $('.tooltip').hide();
-      clickedCode = null;
+      game.clickedCode = null;
     });
 
     // stops further propagation when clicked on tooltip links
@@ -210,6 +242,7 @@ var game = {
     // save game stats before closing page
     $(window).on('beforeunload', function() {
       game.saveAnswer();
+      game.saveLevelTime();
       localStorage.setItem('level', game.level);
       localStorage.setItem('answers', JSON.stringify(game.answers));
       localStorage.setItem('solved', JSON.stringify(game.solved));
@@ -218,6 +251,7 @@ var game = {
       localStorage.setItem('points', JSON.stringify(game.points));
       localStorage.setItem('attempts', JSON.stringify(game.attempts));
       localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
+      localStorage.setItem('pageTimes', JSON.stringify(game.pageTimes));
     }).on('hashchange', function() {
       game.language = window.location.hash.substring(1) || 'en';
       game.translate();
@@ -255,7 +289,7 @@ var game = {
 
     var levelData = levels[this.level];
     this.loadLevel(levelData);
-    game.levelStartTimer();
+    game.levelMiliseconds = 0;
   },
 
   // load level menu
@@ -285,26 +319,6 @@ var game = {
       $('#levelsWrapper').toggle();
       $('#instructions .tooltip').remove();
     });
-
-    // save answer and load previous level when clicking on left arrow
-    $('.arrow.left').on('click', function() {
-      if ($(this).hasClass('disabled')) {
-        return;
-      }
-
-      game.saveAnswer();
-      game.prev();
-    });
-
-    // save answer and load next level when clicking on left arrow
-    $('.arrow.right').on('click', function() {
-      if ($(this).hasClass('disabled')) {
-        return;
-      }
-
-      game.saveAnswer();
-      game.next();
-    });
   },
 
   // load and set up level
@@ -318,28 +332,25 @@ var game = {
     $('#before').text(level.before);
     $('#after').text(level.after);
     $('#next').removeClass('animated animation').addClass('disabled');
+    $('#code').attr('disabled', false)
+    $('#pause').removeClass('disabled');
 
     // load instructions
     var instructions = level.instructions[game.language] || level.instructions.en;
     $('#instructions').html(instructions);
-
-    // disable arrow if 1st or last level
-    $('.arrow.disabled').removeClass('disabled');
-
-    if (this.level === 0) {
-      $('.arrow.left').addClass('disabled');
-    }
-
-    if (this.level === levels.length - 1) {
-      $('.arrow.right').addClass('disabled');
-    }
 
     // get answer if any and set focus on answer input
     var answer = game.answers[level.name];
     $('#code').val(answer).focus();
 
     // get points if any
+    var level = levels[game.level];
     $('#points').html(game.totalPoints())
+    if (game.levelTimes[level.name]) {
+      game.levelMiliseconds = game.levelTimes[level.name];
+      this.setTimer(game.levelMiliseconds);
+    };
+
 
     this.loadDocs();
 
@@ -384,6 +395,18 @@ var game = {
     game.changed = false;
     game.applyStyles();
     game.check();
+
+    var level = levels[this.level];
+    if (!game.pageStartTimes[level.name]) {
+      game.pageStartTimes[level.name] = new Date();
+    }
+
+    if ($.inArray(level.name, game.solved) !== -1) {
+      $('#next').addClass('animated animation').removeClass('disabled');
+      $('#check').addClass('disabled');
+      $('#code').attr('disabled', true)
+      $('#pause').addClass('disabled');
+    }
   },
 
   loadDocs: function() {
@@ -397,7 +420,7 @@ var game = {
           e.stopPropagation();
 
           // If click same code when tooltip already displayed, just remove current tooltip.
-          if ($('#instructions .tooltip').length !== 0 && clickedCode === code){
+          if ($('#instructions .tooltip').length !== 0 && game.clickedCode === code){
             $('#instructions .tooltip').remove();
             return;
           }
@@ -430,7 +453,7 @@ var game = {
 
             game.check();
           });
-          clickedCode = code;
+          game.clickedCode = code;
         });
       }
     });
@@ -482,6 +505,8 @@ var game = {
     // if correct true -> level solved
     if (correct) {
       game.levelEndTimer();
+      $('#pause').addClass('disabled');
+
       ga('send', {
         hitType: 'event',
         eventCategory: level.name,
@@ -518,15 +543,15 @@ var game = {
     let pointsTemp = level.maxPoints;
     const timePoints = function() {
       let timePointsTemp = pointsTemp/2;
-      let elapsedTimeSeconds = ((game.levelEndTime.getTime() - game.levelStartTime.getTime())/ 1000)
+      let elapsedTimeSeconds = game.levelMiliseconds/ 1000;
       if(elapsedTimeSeconds < level.maxTimeIntervals[0]) {
         return timePointsTemp
       } else if (elapsedTimeSeconds > level.maxTimeIntervals[0] && elapsedTimeSeconds < level.maxTimeIntervals[1]) {
-        return timePointsTemp*0.75
+        return timePointsTemp*0.75;
       } else if (elapsedTimeSeconds > level.maxTimeIntervals[1] && elapsedTimeSeconds < level.maxTimeIntervals[2]) {
-        return timePointsTemp*0.5
+        return timePointsTemp*0.5;
       } else if (elapsedTimeSeconds > level.maxTimeIntervals[2] && elapsedTimeSeconds < level.maxTimeIntervals[3]) {
-        return timePointsTemp*0.25
+        return timePointsTemp*0.25;
       } else {
         return 0;
       };
@@ -542,7 +567,7 @@ var game = {
     }
     const totalLevelPoints = timePoints() + attemptsPoints();
     game.points[level.name] = Math.floor(totalLevelPoints*10)/10;
-    game.pointsIndicator.textContent = game.totalPoints()
+    $('#points').html(game.totalPoints())
   },
 
   totalPoints: function() {
@@ -561,19 +586,35 @@ var game = {
   },
 
   levelStartTimer: function() {
-    game.intervalId = setInterval(game.timeCounting, 10);
-    game.levelStartTime = new Date();
+    var level = levels[this.level];
+
+    if ($.inArray(level.name, game.solved) === -1) {
+      game.intervalId = setInterval(game.timeCounting, 10);
+      $('#code').attr('disabled', false);
+      $('#check').removeClass('disabled');
+      $('#pause').removeClass('disabled');
+      $('#pause-screen').addClass('d-none');
+      $('#start-screen').addClass('d-none');
+
+    }
   },
 
   levelEndTimer: function() {
-    game.levelEndTime = new Date();
-    game.intervalId && clearInterval(game.intervalId);
+    var level = levels[this.level];
+    if ($.inArray(level.name, game.solved) === -1) {
+      game.intervalId && clearInterval(game.intervalId);
+      game.intervalId = -1;
+      $('#code').attr('disabled', true);
+      $('#check').addClass('disabled');
+      $('#pause').addClass('disabled');
+      $('#pause-screen').removeClass('d-none');
+    }
     return;
   },
 
   saveLevelTime: function() {
     var level = levels[this.level];
-    game.levelTimes[level.name] = ((game.levelEndTime.getTime() - game.levelStartTime.getTime())/ 1000);
+    game.levelTimes[level.name] = game.levelMiliseconds;
     game.levelStartTime = null;
     game.levelEndTime = null;
   },
@@ -593,6 +634,20 @@ var game = {
     $('#code').val(solution);
     $('#share').show();
     $('.frog .bg').removeClass('pulse').addClass('bounce');
+
+    // save to database
+    db.collection("games").add({
+      points: game.points,
+      attempts: game.attempts,
+      levelTimes: game.levelTimes,
+      pageTimes: game.pageTimes
+    })
+    .then((docRef) => {
+      console.log("Document written with ID: ", docRef.id);
+    })
+    .catch((error) => {
+        console.error("Error adding document: ", error);
+    });
   },
 
   transform: function() {
@@ -675,8 +730,15 @@ var game = {
   },
 
   timeCounting: function() {
-    const timeElapsed = (new Date().getTime() - game.levelStartTime.getTime());
+    if(game.levelMiliseconds > 0) {
+      game.levelMiliseconds = game.levelMiliseconds - 10
+      game.setTimer(game.levelMiliseconds);
+    } else {
+      game.levelEndTimer()
+    }
+  },
 
+  setTimer: function(timeElapsed) {
     let milisecondCounter = Math.floor((timeElapsed % 1000)/10);
     let secondCounter = Math.floor((timeElapsed / 1000) % 60);
     let minutesCounter = Math.floor(((timeElapsed / (1000*60)) % 60));
