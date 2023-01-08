@@ -1,20 +1,20 @@
-const firebaseConfig = {
-  apiKey: "AIzaSyAKqE7MdhOnRzXyjtP2wQxQ_iR73h0IAAs",
-  authDomain: "flexboxfroggymaster.firebaseapp.com",
-  projectId: "flexboxfroggymaster",
-  storageBucket: "flexboxfroggymaster.appspot.com",
-  messagingSenderId: "604293471792",
-  appId: "1:604293471792:web:8f008684257e389b6b57f5"
-};
+// const firebaseConfig = {
+//   apiKey: "AIzaSyAKqE7MdhOnRzXyjtP2wQxQ_iR73h0IAAs",
+//   authDomain: "flexboxfroggymaster.firebaseapp.com",
+//   projectId: "flexboxfroggymaster",
+//   storageBucket: "flexboxfroggymaster.appspot.com",
+//   messagingSenderId: "604293471792",
+//   appId: "1:604293471792:web:8f008684257e389b6b57f5"
+// };
 
-// Initialize Firebase
-firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
+// // Initialize Firebase
+// firebase.initializeApp(firebaseConfig);
+// const db = firebase.firestore();
 
 var game = {
   //stopwatch
   intervalId: -1,
-  levelMiliseconds: -1,
+  levelMiliseconds: null,
   pageStartTimes: (localStorage.pageStartTimes && JSON.parse(localStorage.pageStartTimes)) || {},
   pageEndTimes: (localStorage.pageEndTimes && JSON.parse(localStorage.pageEndTimes)) || {},
   pageTimes: (localStorage.pageTimes && JSON.parse(localStorage.pageTimes)) || {},
@@ -23,6 +23,7 @@ var game = {
   lives: 0,
   remainingLives: (localStorage.remainingLives && JSON.parse(localStorage.remainingLives)) || {},
   points: (localStorage.points && JSON.parse(localStorage.points)) || {},
+  badges: (localStorage.solved && JSON.parse(localStorage.solved)) || [],
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
   language: window.location.hash.substring(1) || 'en',
@@ -36,7 +37,6 @@ var game = {
   clickedCode: null,
 
   start: function() {
-    console.log('start')
     // navigator.language can include '-'
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/NavigatorLanguage/language
     var requestLang = window.navigator.language.split('-')[0];
@@ -56,7 +56,6 @@ var game = {
       game.user = '' + (new Date()).getTime() + Math.random().toString(36).slice(1);
       localStorage.setItem('user', game.user);
     }
-    game.levelData = levels[this.level];
     this.setHandlers();
     this.loadMenu();
     game.loadLevel(levels[game.level]);
@@ -68,17 +67,21 @@ var game = {
       game.levelStartTimer();
       game.disableButtons(true, false, false);
       game.showStartScreen(false);
+      game.showCodeLine(true)
     });
 
     $('#pause').on('click', function() {
-      console.log('haool')
       game.levelEndTimer();
       game.showPauseScreen(true);
+      game.disableButtons(true, true, true);
+      game.showCodeLine(false)
     });
 
     $('#resume').on('click', function() {
       game.levelStartTimer();
       game.showPauseScreen(false);
+      game.disableButtons(true, false, false);
+      game.showCodeLine(true)
     });
 
     $('#check').on('click', function() {
@@ -107,8 +110,9 @@ var game = {
         return;
       }
 
-      game.pageEndTimes[game.levelData.name] = new Date();
-      game.pageTimes[game.levelData.name] = game.pageEndTimes[game.levelData.name] - game.pageStartTimes[game.levelData.name]
+      const level = levels[game.level]
+      game.pageEndTimes[level.name] = new Date();
+      game.pageTimes[level.name] = game.pageEndTimes[level.name] - game.pageStartTimes[level.name]
       $(this).removeClass('animated animation'); 
       $('.frog').addClass('animated bounceOutUp');
 
@@ -116,6 +120,7 @@ var game = {
         if (game.level >= levels.length - 1) {
           game.win();
         } else {
+          game.levelMiliseconds = null;
           game.next();
         }
       }, 2000);
@@ -166,22 +171,22 @@ var game = {
 
       if (r) {
         game.levelEndTimer();
+
         game.level = 0;
         game.answers = {};
         game.solved = [];
         // additions
         game.intervalId = null;
-        game.levelMiliseconds = -1;
+        game.levelMiliseconds = null;
         game.pageStartTimes = {};
         game.pageEndTimes = {};
         game.pageTimes = {};
         game.levelTimes = {};
         game.remainingLives = {};
+        game.badges = {};
         game.points = {};
 
         game.loadLevel(levels[0]);
-        game.showStartScreen(true)
-        game.sho
         $('.level-marker').removeClass('solved');
       }
     });
@@ -264,6 +269,7 @@ var game = {
       localStorage.setItem('colorblind', JSON.stringify(game.colorblind));
       // additional
       localStorage.setItem('points', JSON.stringify(game.points));
+      localStorage.setItem('badges', JSON.stringify(game.badges));
       localStorage.setItem('remainingLives', JSON.stringify(game.remainingLives));
       localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
       localStorage.setItem('pageTimes', JSON.stringify(game.pageTimes));
@@ -284,21 +290,13 @@ var game = {
         history.replaceState({}, document.title, './');
       }
     });
-
-    $(window).on('blur', function() {
-      if(game.levelMiliseconds > 0) {
-        game.levelEndTimer();
-        game.setCodeBox();
-      }
-    });
   },
 
   // navigate to previous level
   prev: function() {
     this.level--;
 
-    var levelData = levels[this.level];
-    this.loadLevel(levelData);
+    this.loadLevel(this.level);
   },
 
   // navigate to next level
@@ -308,9 +306,7 @@ var game = {
     } else {
       this.level++
     }
-    game.levelData = levels[this.level];
-
-    this.loadLevel(game.levelData);
+    this.loadLevel(levels[this.level]);
   },
 
   // load level menu
@@ -318,20 +314,11 @@ var game = {
     levels.forEach(function(level, i) {
       var levelMarker = $('<span/>').addClass('level-marker').attr({'data-level': i, 'title': level.name}).text(i+1);
 
-      if (game.levelSolved()) {
+      if (game.solved.includes(level.name)) {
         levelMarker.addClass('solved');
       }
 
       levelMarker.appendTo('#levels');
-    });
-
-    // save answer when clicking on level in level menu and load clicked level
-    $('.level-marker').on('click', function() {
-      game.saveAnswer();
-
-      var level = $(this).attr('data-level');
-      game.level = parseInt(level, 10);
-      game.loadLevel(levels[level]);
     });
 
     // open or close level menu when clicking on level indicator/ heading
@@ -344,15 +331,30 @@ var game = {
 
   // load and set up level
   loadLevel: function(level) {
-
     $('#share').hide();
     this.setTimers();
     this.setLives();
     this.setPoints();
-    this.setButtonsAndCodeLine();
     this.setGameScreen();
     this.setCodeBox();
     this.setLevelIndicator();
+
+    if(game.levelMiliseconds == 0) {
+      game.showStartScreen(false);
+      game.showPauseScreen(false);
+      game.disableButtons(true, false, true)
+      game.showCodeLine(true)
+    } else if(game.levelMiliseconds < level.maxTime * 1000) {
+      game.showStartScreen(false);
+      game.showPauseScreen(true);
+      game.disableButtons(true, false, true) 
+      game.showCodeLine(true)
+    } else {
+      game.showStartScreen(true);
+      game.showPauseScreen(false);
+      game.disableButtons(true, false, false) 
+      game.showCodeLine(true)
+    }
 
     // load instructions
     var instructions = level.instructions[game.language] || level.instructions.en;
@@ -459,8 +461,9 @@ var game = {
 
   // apply styles to elements (level setup)
   applyStyles: function() {
+    const level = levels[game.level]
     var code = $('#code').val();
-    var selector = game.levelData.selector || '';
+    var selector = level.selector || '';
     $('#pond ' +  selector).attr('style', code);
     game.saveAnswer();
   },
@@ -498,13 +501,16 @@ var game = {
       }
     });
 
+    const level = levels[game.level]
     // if correct true -> level solved
     if (correct) {
       game.levelEndTimer();
-      game.solved.push(game.levelData.name);
+      game.solved.push(level.name);
       game.savePoints();
       game.saveLevelTime();
-      game.setButtonsAndCodeLine();
+      game.disableButtons(false, true, true);
+      game.showCodeLine(false);
+      game.checkBadges();
 
       ga('send', {
         hitType: 'event',
@@ -517,7 +523,7 @@ var game = {
     } else {
       ga('send', {
         hitType: 'event',
-        eventCategory: game.levelData.name,
+        eventCategory: level.name,
         eventAction: 'incorrect',
         eventLabel: $('#code').val()
       });
@@ -527,21 +533,23 @@ var game = {
   },
 
   saveLives: function() {
-    game.remainingLives[game.levelData.name] = game.lives;
+    const level = levels[game.level]
+    game.remainingLives[level.name] = game.lives;
   },
 
   savePoints: function() {
-    let pointsTemp = game.levelData.maxPoints;
+    const level = levels[game.level]
+    let pointsTemp = level.maxPoints;
     const timePoints = function() {
       let timePointsTemp = pointsTemp/2;
       let elapsedTimeSeconds = game.levelMiliseconds/ 1000;
-      if(elapsedTimeSeconds < game.levelData.maxTimeIntervals[0]) {
+      if(elapsedTimeSeconds < level.maxTimeIntervals[0]) {
         return timePointsTemp
-      } else if (elapsedTimeSeconds > game.levelData.maxTimeIntervals[0] && elapsedTimeSeconds < game.levelData.maxTimeIntervals[1]) {
+      } else if (elapsedTimeSeconds > level.maxTimeIntervals[0] && elapsedTimeSeconds < level.maxTimeIntervals[1]) {
         return timePointsTemp*0.75;
-      } else if (elapsedTimeSeconds > game.levelData.maxTimeIntervals[1] && elapsedTimeSeconds < game.levelData.maxTimeIntervals[2]) {
+      } else if (elapsedTimeSeconds > level.maxTimeIntervals[1] && elapsedTimeSeconds < level.maxTimeIntervals[2]) {
         return timePointsTemp*0.5;
-      } else if (elapsedTimeSeconds > game.levelData.maxTimeIntervals[2] && elapsedTimeSeconds < game.levelData.maxTimeIntervals[3]) {
+      } else if (elapsedTimeSeconds > level.maxTimeIntervals[2] && elapsedTimeSeconds < level.maxTimeIntervals[3]) {
         return timePointsTemp*0.25;
       } else {
         return 0;
@@ -552,7 +560,7 @@ var game = {
       return 25*game.lives;
     }
     const totalLevelPoints = timePoints() + livesPoints();
-    game.points[game.levelData.name] = Math.floor(totalLevelPoints*10)/10;
+    game.points[level.name] = Math.floor(totalLevelPoints*10)/10;
     $('#points').html(game.totalPoints())
   },
 
@@ -562,13 +570,13 @@ var game = {
 
   // save answer in array
   saveAnswer: function() {
-    game.answers[game.levelData.name] = $('#code').val();
+    const level = levels[game.level]
+    game.answers[level.name] = $('#code').val();
   },
 
   levelStartTimer: function() {
     if(!game.levelSolved()) {
       game.intervalId = setInterval(game.timeCounting, 10);
-      console.log(game.intervalId)
     }
   },
 
@@ -580,10 +588,8 @@ var game = {
   },
 
   saveLevelTime: function() {
-    game.levelTimes[game.levelData.name] = game.levelMiliseconds;
-    game.levelMiliseconds = -1;
-    game.levelStartTime = null;
-    game.levelEndTime = null;
+    const level = levels[game.level]
+    game.levelTimes[level.name] = game.levelMiliseconds;
   },
 
   // shake code field if wrong answer
@@ -603,18 +609,18 @@ var game = {
     $('.frog .bg').removeClass('pulse').addClass('bounce');
 
     // save to database
-    db.collection("games").add({
-      points: game.points,
-      remainingLives: game.remainingLives,
-      levelTimes: game.levelTimes,
-      pageTimes: game.pageTimes
-    })
-    .then((docRef) => {
-      console.log("Document written with ID: ", docRef.id);
-    })
-    .catch((error) => {
-        console.error("Error adding document: ", error);
-    });
+    // db.collection("games").add({
+    //   points: game.points,
+    //   remainingLives: game.remainingLives,
+    //   levelTimes: game.levelTimes,
+    //   pageTimes: game.pageTimes
+    // })
+    // .then((docRef) => {
+    //   console.log("Document written with ID: ", docRef.id);
+    // })
+    // .catch((error) => {
+    //     console.error("Error adding document: ", error);
+    // });
   },
 
   transform: function() {
@@ -724,23 +730,28 @@ var game = {
   },
 
   setTimers: function() {
-    if (!game.pageStartTimes[game.levelData.name]) {
-      game.pageStartTimes[game.levelData.name] = new Date();
+    const level = levels[game.level]
+    if (!game.pageStartTimes[level.name]) {
+      game.pageStartTimes[level.name] = new Date();
     }
-    if (game.levelTimes[game.levelData.name] != null) {
-      game.levelMiliseconds = game.levelTimes[game.levelData.name];
+
+    console.log(game.levelTimes[level.name])
+    if (game.levelTimes[level.name] != null) {
+      game.levelMiliseconds = game.levelTimes[level.name];
       this.setTimeIndicator(game.levelMiliseconds);
     } else {
-      game.levelMiliseconds = game.levelData.maxTime * 1000;
+      game.levelMiliseconds = level.maxTime * 1000;
       this.setTimeIndicator(game.levelMiliseconds);
     };
+    console.log(game.levelMiliseconds)
   },
   
   setLives: function() {
-    if (game.remainingLives[game.levelData.name] != null) {
-      game.lives = game.remainingLives[game.levelData.name];
+    const level = levels[game.level]
+    if (game.remainingLives[level.name] != null) {
+      game.lives = game.remainingLives[level.name];
     } else {
-      game.lives = game.levelData.lives;
+      game.lives = level.lives;
     }
     game.printLives();
   },
@@ -749,30 +760,11 @@ var game = {
     $('#points').html(game.totalPoints())
   },
 
-  setButtonsAndCodeLine: function() {
-    game.disableButtons(true, false, false);
-    game.showCodeLine(true);
-  },
-
   setCodeBox: function() {
+    const level = levels[game.level]
     $('#editor').show();
-    $('#before').text(game.levelData.before);
-    $('#after').text(game.levelData.after);
-
-    if(game.levelMiliseconds == 0) {
-      game.showStartScreen(false);
-      game.showPauseScreen(false);
-      game.disableButtons(true, false, true) 
-      return;
-    }
-
-    if(game.levelMiliseconds < game.levelData.maxTime * 1000) {
-      game.showStartScreen(false);
-      game.showPauseScreen(true);
-    } else {
-      game.showStartScreen(true);
-      game.showPauseScreen(false);
-    }
+    $('#before').text(level.before);
+    $('#after').text(level.after);
   },
 
   setLevelIndicator: function() {
@@ -797,33 +789,33 @@ var game = {
     pause ? $('#pause').addClass('disabled') : $('#pause').removeClass('disabled');
   },
 
-  showPauseScreen: function(disabled) {
+  showPauseScreen: function(show) {
     if(game.levelSolved()) {
-      $('#pause-screen').hide();
+      $('#pause-screen').addClass('d-none');
       return;
     }
-    disabled ? $('#pause-screen').show() : $('#pause-screen').hide();
+    show ? $('#pause-screen').removeClass('d-none') : $('#pause-screen').addClass('d-none');
   }, 
   
-  showStartScreen: function(disabled) {
+  showStartScreen: function(show) {
     if(game.levelSolved()) {
-      $('#start-screen').hide();
+      $('#start-screen').addClass('d-none');
       return;
     }
-    disabled ? $('#start-screen').show() : $('#start-screen').hide()
+    show ? $('#start-screen').removeClass('d-none') : $('#start-screen').addClass('d-none');
   },
 
-  showCodeLine: function(disabled) {
+  showCodeLine: function(show) {
     if (game.levelSolved()) {
       $('#code').attr('disabled', true)
       return;
     }
-    disabled ? $('#code').attr('disabled', false) : $('#code').attr('disabled', true);
+    show ? $('#code').attr('disabled', false) : $('#code').attr('disabled', true);
   },
 
   levelSolved: function() {
-    console.log(game)
-    return $.inArray(game.levelData.name, game.solved) !== -1
+    const level = levels[game.level]
+    return $.inArray(level.name, game.solved) !== -1
   },
 
   printLives: function() {
@@ -831,6 +823,18 @@ var game = {
     for (let i = 0; i < game.lives; i++) {
       $('#lives-indicator').append(`<div id="frog-live-${i}"class="frog-lives red"><div class="bg animated pulse infinite"></div></div>`)
     };
+  },
+
+  checkBadges: function() {
+    let lifeBadge = true;
+    for(let i = game.level; i > game.level - 3; i--) {
+      if(i < 0 || levels[i].lives != game.remainingLives[levels[i].name]) {
+        lifeBadge = false;
+      }
+    }
+    if(lifeBadge) {
+      game.badges.push('life-badge');
+    }
   }
 };
 
