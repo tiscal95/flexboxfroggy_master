@@ -14,19 +14,21 @@ const db = firebase.firestore();
 var game = {
   //stopwatch
   intervalId: -1,
-  levelMiliseconds: 0,
+  levelMiliseconds: -1,
   pageStartTimes: (localStorage.pageStartTimes && JSON.parse(localStorage.pageStartTimes)) || {},
   pageEndTimes: (localStorage.pageEndTimes && JSON.parse(localStorage.pageEndTimes)) || {},
   pageTimes: (localStorage.pageTimes && JSON.parse(localStorage.pageTimes)) || {},
   levelTimes: (localStorage.levelTimes && JSON.parse(localStorage.levelTimes)) || {},
   // additions
-  attempts: (localStorage.attempts && JSON.parse(localStorage.attempts)) || {},
+  lives: 0,
+  remainingLives: (localStorage.remainingLives && JSON.parse(localStorage.remainingLives)) || {},
   points: (localStorage.points && JSON.parse(localStorage.points)) || {},
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
   language: window.location.hash.substring(1) || 'en',
   difficulty: 'easy',
   level: parseInt(localStorage.level, 10) || 0,
+  levelData: null,
   answers: (localStorage.answers && JSON.parse(localStorage.answers)) || {},
   solved: (localStorage.solved && JSON.parse(localStorage.solved)) || [],
   user: localStorage.user || '',
@@ -34,6 +36,7 @@ var game = {
   clickedCode: null,
 
   start: function() {
+    console.log('start')
     // navigator.language can include '-'
     // ref: https://developer.mozilla.org/en-US/docs/Web/API/NavigatorLanguage/language
     var requestLang = window.navigator.language.split('-')[0];
@@ -53,6 +56,7 @@ var game = {
       game.user = '' + (new Date()).getTime() + Math.random().toString(36).slice(1);
       localStorage.setItem('user', game.user);
     }
+    game.levelData = levels[this.level];
     this.setHandlers();
     this.loadMenu();
     game.loadLevel(levels[game.level]);
@@ -61,19 +65,29 @@ var game = {
   // set event handerls
   setHandlers: function() {
     $('#start').on('click', function() {
-      var level = levels[game.level];
-      game.levelMiliseconds = level.maxTime * 1000;
-      game.intervalId == -1 && game.levelStartTimer();
+      game.levelStartTimer();
+      game.disableButtons(true, false, false);
+      game.showStartScreen(false);
     });
 
-    $('.pause').on('click', function() {
-      game.intervalId != -1 ? game.levelEndTimer() : game.levelStartTimer();
+    $('#pause').on('click', function() {
+      console.log('haool')
+      game.levelEndTimer();
+      game.showPauseScreen(true);
+    });
+
+    $('#resume').on('click', function() {
+      game.levelStartTimer();
+      game.showPauseScreen(false);
     });
 
     $('#check').on('click', function() {
-      game.makeAttempt()
       game.check();
       if ($('#next').hasClass('disabled')) {
+        game.lives--;
+        game.saveLives();
+        game.printLives();
+
         if (!$('.frog').hasClass('animated')) {
           game.tryagain();
         }
@@ -93,12 +107,10 @@ var game = {
         return;
       }
 
-      var level = levels[game.level];
-      game.pageEndTimes[level.name] = new Date();
-      game.pageTimes[level.name] = game.pageEndTimes[level.name] - game.pageStartTimes[level.name]
+      game.pageEndTimes[game.levelData.name] = new Date();
+      game.pageTimes[game.levelData.name] = game.pageEndTimes[game.levelData.name] - game.pageStartTimes[game.levelData.name]
       $(this).removeClass('animated animation'); 
       $('.frog').addClass('animated bounceOutUp');
-      $('#next').addClass('disabled');
 
       setTimeout(function() {
         if (game.level >= levels.length - 1) {
@@ -153,20 +165,23 @@ var game = {
       var r = confirm(warningReset);
 
       if (r) {
+        game.levelEndTimer();
         game.level = 0;
         game.answers = {};
         game.solved = [];
         // additions
         game.intervalId = null;
-        game.levelMiliseconds = 0;
+        game.levelMiliseconds = -1;
         game.pageStartTimes = {};
         game.pageEndTimes = {};
         game.pageTimes = {};
         game.levelTimes = {};
-        game.attempts = {};
+        game.remainingLives = {};
         game.points = {};
 
         game.loadLevel(levels[0]);
+        game.showStartScreen(true)
+        game.sho
         $('.level-marker').removeClass('solved');
       }
     });
@@ -249,7 +264,7 @@ var game = {
       localStorage.setItem('colorblind', JSON.stringify(game.colorblind));
       // additional
       localStorage.setItem('points', JSON.stringify(game.points));
-      localStorage.setItem('attempts', JSON.stringify(game.attempts));
+      localStorage.setItem('remainingLives', JSON.stringify(game.remainingLives));
       localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
       localStorage.setItem('pageTimes', JSON.stringify(game.pageTimes));
     }).on('hashchange', function() {
@@ -269,6 +284,13 @@ var game = {
         history.replaceState({}, document.title, './');
       }
     });
+
+    $(window).on('blur', function() {
+      if(game.levelMiliseconds > 0) {
+        game.levelEndTimer();
+        game.setCodeBox();
+      }
+    });
   },
 
   // navigate to previous level
@@ -286,10 +308,9 @@ var game = {
     } else {
       this.level++
     }
+    game.levelData = levels[this.level];
 
-    var levelData = levels[this.level];
-    this.loadLevel(levelData);
-    game.levelMiliseconds = 0;
+    this.loadLevel(game.levelData);
   },
 
   // load level menu
@@ -297,7 +318,7 @@ var game = {
     levels.forEach(function(level, i) {
       var levelMarker = $('<span/>').addClass('level-marker').attr({'data-level': i, 'title': level.name}).text(i+1);
 
-      if ($.inArray(level.name, game.solved) !== -1) {
+      if (game.levelSolved()) {
         levelMarker.addClass('solved');
       }
 
@@ -323,17 +344,15 @@ var game = {
 
   // load and set up level
   loadLevel: function(level) {
-    $('#editor').show();
+
     $('#share').hide();
-    $('#background, #pond').removeClass('wrap').attr('style', '').empty();
-    $('#levelsWrapper').hide();
-    $('.level-marker').removeClass('current').eq(this.level).addClass('current');
-    $('#level-counter .current').text(this.level + 1);
-    $('#before').text(level.before);
-    $('#after').text(level.after);
-    $('#next').removeClass('animated animation').addClass('disabled');
-    $('#code').attr('disabled', false)
-    $('#pause').removeClass('disabled');
+    this.setTimers();
+    this.setLives();
+    this.setPoints();
+    this.setButtonsAndCodeLine();
+    this.setGameScreen();
+    this.setCodeBox();
+    this.setLevelIndicator();
 
     // load instructions
     var instructions = level.instructions[game.language] || level.instructions.en;
@@ -342,15 +361,6 @@ var game = {
     // get answer if any and set focus on answer input
     var answer = game.answers[level.name];
     $('#code').val(answer).focus();
-
-    // get points if any
-    var level = levels[game.level];
-    $('#points').html(game.totalPoints())
-    if (game.levelTimes[level.name]) {
-      game.levelMiliseconds = game.levelTimes[level.name];
-      this.setTimer(game.levelMiliseconds);
-    };
-
 
     this.loadDocs();
 
@@ -395,18 +405,6 @@ var game = {
     game.changed = false;
     game.applyStyles();
     game.check();
-
-    var level = levels[this.level];
-    if (!game.pageStartTimes[level.name]) {
-      game.pageStartTimes[level.name] = new Date();
-    }
-
-    if ($.inArray(level.name, game.solved) !== -1) {
-      $('#next').addClass('animated animation').removeClass('disabled');
-      $('#check').addClass('disabled');
-      $('#code').attr('disabled', true)
-      $('#pause').addClass('disabled');
-    }
   },
 
   loadDocs: function() {
@@ -461,9 +459,8 @@ var game = {
 
   // apply styles to elements (level setup)
   applyStyles: function() {
-    var level = levels[game.level];
     var code = $('#code').val();
-    var selector = level.selector || '';
+    var selector = game.levelData.selector || '';
     $('#pond ' +  selector).attr('style', code);
     game.saveAnswer();
   },
@@ -472,7 +469,6 @@ var game = {
   check: function() {
     game.applyStyles();
 
-    var level = levels[game.level];
     var lilypads = {};
     var frogs = {};
     var correct = true;
@@ -505,68 +501,58 @@ var game = {
     // if correct true -> level solved
     if (correct) {
       game.levelEndTimer();
-      $('#pause').addClass('disabled');
+      game.solved.push(game.levelData.name);
+      game.savePoints();
+      game.saveLevelTime();
+      game.setButtonsAndCodeLine();
 
       ga('send', {
         hitType: 'event',
-        eventCategory: level.name,
+        eventCategory: game.level.name,
         eventAction: 'correct',
         eventLabel: $('#code').val()
       });
 
-      // if level not previously solved, save in solved array
-      if ($.inArray(level.name, game.solved) === -1) {
-        game.solved.push(level.name);
-        game.savePoints();
-        game.saveLevelTime();
-      }
-
       $('[data-level=' + game.level + ']').addClass('solved');
-      $('#next').removeClass('disabled').addClass('animated animation');
-      $('#check').addClass('disabled')
-
     } else {
       ga('send', {
         hitType: 'event',
-        eventCategory: level.name,
+        eventCategory: game.levelData.name,
         eventAction: 'incorrect',
         eventLabel: $('#code').val()
       });
-
       game.changed = true;
       $('#next').removeClass('animated animation').addClass('disabled');
     }
   },
 
+  saveLives: function() {
+    game.remainingLives[game.levelData.name] = game.lives;
+  },
+
   savePoints: function() {
-    var level = levels[this.level];
-    let pointsTemp = level.maxPoints;
+    let pointsTemp = game.levelData.maxPoints;
     const timePoints = function() {
       let timePointsTemp = pointsTemp/2;
       let elapsedTimeSeconds = game.levelMiliseconds/ 1000;
-      if(elapsedTimeSeconds < level.maxTimeIntervals[0]) {
+      if(elapsedTimeSeconds < game.levelData.maxTimeIntervals[0]) {
         return timePointsTemp
-      } else if (elapsedTimeSeconds > level.maxTimeIntervals[0] && elapsedTimeSeconds < level.maxTimeIntervals[1]) {
+      } else if (elapsedTimeSeconds > game.levelData.maxTimeIntervals[0] && elapsedTimeSeconds < game.levelData.maxTimeIntervals[1]) {
         return timePointsTemp*0.75;
-      } else if (elapsedTimeSeconds > level.maxTimeIntervals[1] && elapsedTimeSeconds < level.maxTimeIntervals[2]) {
+      } else if (elapsedTimeSeconds > game.levelData.maxTimeIntervals[1] && elapsedTimeSeconds < game.levelData.maxTimeIntervals[2]) {
         return timePointsTemp*0.5;
-      } else if (elapsedTimeSeconds > level.maxTimeIntervals[2] && elapsedTimeSeconds < level.maxTimeIntervals[3]) {
+      } else if (elapsedTimeSeconds > game.levelData.maxTimeIntervals[2] && elapsedTimeSeconds < game.levelData.maxTimeIntervals[3]) {
         return timePointsTemp*0.25;
       } else {
         return 0;
       };
     }
-    const attemptsPoints = function() {
-      let attemptsPointsTemp = pointsTemp/2;
-      let attemptsTemp = game.attempts[level.name];
-      if(attemptsTemp < 5) {
-        return attemptsPointsTemp/(attemptsTemp%5)
-      } else {
-        return 0;
-      }
+    const livesPoints = function() {
+      let livesPointsTemp = pointsTemp/2;
+      return 25*game.lives;
     }
-    const totalLevelPoints = timePoints() + attemptsPoints();
-    game.points[level.name] = Math.floor(totalLevelPoints*10)/10;
+    const totalLevelPoints = timePoints() + livesPoints();
+    game.points[game.levelData.name] = Math.floor(totalLevelPoints*10)/10;
     $('#points').html(game.totalPoints())
   },
 
@@ -576,45 +562,26 @@ var game = {
 
   // save answer in array
   saveAnswer: function() {
-    var level = levels[this.level];
-    game.answers[level.name] = $('#code').val();
-  },
-
-  makeAttempt: function() {
-    var level = levels[this.level];
-    game.attempts[level.name] = game.attempts[level.name] && (game.attempts[level.name] + 1) || 1;
+    game.answers[game.levelData.name] = $('#code').val();
   },
 
   levelStartTimer: function() {
-    var level = levels[this.level];
-
-    if ($.inArray(level.name, game.solved) === -1) {
+    if(!game.levelSolved()) {
       game.intervalId = setInterval(game.timeCounting, 10);
-      $('#code').attr('disabled', false);
-      $('#check').removeClass('disabled');
-      $('#pause').removeClass('disabled');
-      $('#pause-screen').addClass('d-none');
-      $('#start-screen').addClass('d-none');
-
+      console.log(game.intervalId)
     }
   },
 
   levelEndTimer: function() {
-    var level = levels[this.level];
-    if ($.inArray(level.name, game.solved) === -1) {
+    if(!game.levelSolved()) {
       game.intervalId && clearInterval(game.intervalId);
       game.intervalId = -1;
-      $('#code').attr('disabled', true);
-      $('#check').addClass('disabled');
-      $('#pause').addClass('disabled');
-      $('#pause-screen').removeClass('d-none');
     }
-    return;
   },
 
   saveLevelTime: function() {
-    var level = levels[this.level];
-    game.levelTimes[level.name] = game.levelMiliseconds;
+    game.levelTimes[game.levelData.name] = game.levelMiliseconds;
+    game.levelMiliseconds = -1;
     game.levelStartTime = null;
     game.levelEndTime = null;
   },
@@ -638,7 +605,7 @@ var game = {
     // save to database
     db.collection("games").add({
       points: game.points,
-      attempts: game.attempts,
+      remainingLives: game.remainingLives,
       levelTimes: game.levelTimes,
       pageTimes: game.pageTimes
     })
@@ -732,13 +699,13 @@ var game = {
   timeCounting: function() {
     if(game.levelMiliseconds > 0) {
       game.levelMiliseconds = game.levelMiliseconds - 10
-      game.setTimer(game.levelMiliseconds);
+      game.setTimeIndicator(game.levelMiliseconds);
     } else {
       game.levelEndTimer()
     }
   },
 
-  setTimer: function(timeElapsed) {
+  setTimeIndicator: function(timeElapsed) {
     let milisecondCounter = Math.floor((timeElapsed % 1000)/10);
     let secondCounter = Math.floor((timeElapsed / 1000) % 60);
     let minutesCounter = Math.floor(((timeElapsed / (1000*60)) % 60));
@@ -754,6 +721,116 @@ var game = {
     if (minutesCounter < 10) {
       $('#minutes').html("0" + minutesCounter);
     } else $('#minutes').html(minutesCounter);
+  },
+
+  setTimers: function() {
+    if (!game.pageStartTimes[game.levelData.name]) {
+      game.pageStartTimes[game.levelData.name] = new Date();
+    }
+    if (game.levelTimes[game.levelData.name] != null) {
+      game.levelMiliseconds = game.levelTimes[game.levelData.name];
+      this.setTimeIndicator(game.levelMiliseconds);
+    } else {
+      game.levelMiliseconds = game.levelData.maxTime * 1000;
+      this.setTimeIndicator(game.levelMiliseconds);
+    };
+  },
+  
+  setLives: function() {
+    if (game.remainingLives[game.levelData.name] != null) {
+      game.lives = game.remainingLives[game.levelData.name];
+    } else {
+      game.lives = game.levelData.lives;
+    }
+    game.printLives();
+  },
+
+  setPoints: function() {
+    $('#points').html(game.totalPoints())
+  },
+
+  setButtonsAndCodeLine: function() {
+    game.disableButtons(true, false, false);
+    game.showCodeLine(true);
+  },
+
+  setCodeBox: function() {
+    $('#editor').show();
+    $('#before').text(game.levelData.before);
+    $('#after').text(game.levelData.after);
+
+    if(game.levelMiliseconds == 0) {
+      game.showStartScreen(false);
+      game.showPauseScreen(false);
+      game.disableButtons(true, false, true) 
+      return;
+    }
+
+    if(game.levelMiliseconds < game.levelData.maxTime * 1000) {
+      game.showStartScreen(false);
+      game.showPauseScreen(true);
+    } else {
+      game.showStartScreen(true);
+      game.showPauseScreen(false);
+    }
+  },
+
+  setLevelIndicator: function() {
+    $('.level-marker').removeClass('current').eq(this.level).addClass('current');
+    $('#level-counter .current').text(this.level + 1);
+  },
+
+  setGameScreen: function() {
+    $('#background, #pond').removeClass('wrap').attr('style', '').empty();
+    $('#levelsWrapper').hide();
+  },
+
+  disableButtons: function(next, check, pause) {
+    if(game.levelSolved()) {
+      $('#check').addClass('disabled');
+      $('#pause').addClass('disabled');
+      $('#next').addClass('animated animation').removeClass('disabled');;
+      return
+    }
+    next ? $('#next').removeClass('animated animation').addClass('disabled') : $('#next').addClass('animated animation').removeClass('disabled');
+    check ? $('#check').addClass('disabled') : $('#check').removeClass('disabled');
+    pause ? $('#pause').addClass('disabled') : $('#pause').removeClass('disabled');
+  },
+
+  showPauseScreen: function(disabled) {
+    if(game.levelSolved()) {
+      $('#pause-screen').hide();
+      return;
+    }
+    disabled ? $('#pause-screen').show() : $('#pause-screen').hide();
+  }, 
+  
+  showStartScreen: function(disabled) {
+    if(game.levelSolved()) {
+      $('#start-screen').hide();
+      return;
+    }
+    disabled ? $('#start-screen').show() : $('#start-screen').hide()
+  },
+
+  showCodeLine: function(disabled) {
+    if (game.levelSolved()) {
+      $('#code').attr('disabled', true)
+      return;
+    }
+    disabled ? $('#code').attr('disabled', false) : $('#code').attr('disabled', true);
+  },
+
+  levelSolved: function() {
+    console.log(game)
+    return $.inArray(game.levelData.name, game.solved) !== -1
+  },
+
+  printLives: function() {
+    $('#lives-indicator').html('')
+    for (let i = 0; i < game.lives; i++) {
+      $('#lives-indicator').append(`<div id="frog-live-${i}"class="frog-lives red"><div class="bg animated pulse infinite"></div></div>`)
+    };
   }
 };
 

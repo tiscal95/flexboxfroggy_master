@@ -55,9 +55,37 @@ body {
 
 .stats {
   display: flex;
+  flex-direction: column;
+}
+
+#stats-row-2, #stats-row-1 {
+  display: flex !important;
+  flex-direction: row !important;
   flex-wrap: wrap;
-  gap: 0.3rem;
   justify-content: space-between;
+}
+
+#all-lessons-badge, #complete-badge, #life-badge, #points-badge, #time-badge {
+  width: 40px;
+  height: 50px;
+}
+
+.frog-lives .bg {
+  background-image: url("../images/frog-heart.png");
+  width: 90%;
+  height: 90%;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+#all-lessons-badge .bg, #complete-badge .bg, #life-badge .bg, #points-badge .bg, #time-badge .bg  {
+  background-image: url("../images/badge-inactive.png");
+  width: 90%;
+  height: 90%;
+  background-position: center center;
+  background-size: contain;
+  background-repeat: no-repeat;
 }
 
 .title {
@@ -300,8 +328,14 @@ pre {
 #level-indicator,
 .arrow {
   float: left;
-  height: 30px;
   background-color: rgba(255, 255, 255, 0.2);
+}
+
+#lives-indicator, #badges-indicator {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2em;
+  height: 45px;
 }
 
 #level-indicator, #time-indicator, #points-indicator {
@@ -434,7 +468,6 @@ button#check:not(.disabled):hover {
 
 #pause {
   background-color: black;
-  ;
 }
 
 #pause-screen, #start-screen {
@@ -550,6 +583,13 @@ button#check:not(.disabled):hover {
   z-index: 20;
 }
 
+.frog-lives {
+  position: relative;
+  width: 40px;
+  height: 50px;
+  overflow: hidden;
+}
+
 .lilypad,
 .frog {
   position: relative;
@@ -588,11 +628,12 @@ button#check:not(.disabled):hover {
 
 .lilypad .bg,
 .frog .bg {
-  width: 100%;
-  height: 100%;
+  width: 90%;
+  height: 90%;
   background-position: center center;
   background-size: contain;
   background-repeat: no-repeat;
+  
 }
 
 .frog .bg {
@@ -676,8 +717,15 @@ button#check:not(.disabled):hover {
   }
 
   .stats {
-    justify-content: center;
-    flex-direction: row;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #stats-row-2, #stats-row-1 {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    justify-content: space-between;
   }
 
   .title {

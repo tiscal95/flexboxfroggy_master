@@ -27,37 +27,63 @@
       </div>
       <p id="instructions"></p>
       <div class="stats">
-        <div id="level-counter">
-          <span id="level-indicator">
-            <span id="labelLevel" class="translate">Level</span>
-            <span class="current">1</span>
-            <span class="caret">▾</span>
-          </span>
-          <div id="levelsWrapper" class="tooltip">
-            <div id="levels"></div>
-            <div id="labelReset" class="translate">Reset</div>
+        <div id="stats-row-1">
+          <div id="lives-indicator">
+            <div class="frog-lives red">
+              <div class="bg animated pulse infinite"></div>
+            </div>
+          </div>
+          <div id="badges-indicator">
+            <div id="all-lessons-badge" class="badges">
+              <div class="bg"></div>
+            </div>
+            <div id="complete-badge" class="badges">
+              <div class="bg"></div>
+            </div>
+            <div id="life-badge" class="badges">
+              <div class="bg"></div>
+            </div>
+            <div id="points-badge" class="badges">
+              <div class="bg"></div>
+            </div>
+            <div id="time-badge" class="badges">
+              <div class="bg"></div>
+            </div>
           </div>
         </div>
-        <div id="points-counter">
-          <span id="points-indicator">
-            <span id="points">0</span> XP
-          </span>
-        </div>
-        <div id="time-counter">
-          <span id="time-indicator">
-            <span>
-              <span id="minutes">00</span> :
-              <span id="second">00</span> :
-              <span id="milisecond">00</span>
+        <div id="stats-row-2">
+          <div id="level-counter">
+            <span id="level-indicator">
+              <span id="labelLevel" class="translate">Level</span>
+              <span class="current">1</span>
+              <span class="caret">▾</span>
             </span>
-          </span>
+            <div id="levelsWrapper" class="tooltip">
+              <div id="levels"></div>
+              <div id="labelReset" class="translate">Reset</div>
+            </div>
+          </div>
+          <div id="points-counter">
+            <span id="points-indicator">
+              <span id="points">0</span> XP
+            </span>
+          </div>
+          <div id="time-counter">
+            <span id="time-indicator">
+              <span>
+                <span id="minutes">00</span> :
+                <span id="second">00</span> :
+                <span id="milisecond">00</span>
+              </span>
+            </span>
+          </div>
         </div>
       </div>
       <div id="editor">
-        <div id="pause-screen" class="d-none">
+        <div id="pause-screen">
           <div id="screen-instructions">
             <span>the game is paused</span>
-            <button class="pause translate">Resume</button>
+            <button id="resume" class="translate">Resume</button>
           </div>
         </div>
         <div id="start-screen">
