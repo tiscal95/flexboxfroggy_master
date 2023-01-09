@@ -23,7 +23,7 @@ var game = {
   lives: 0,
   remainingLives: (localStorage.remainingLives && JSON.parse(localStorage.remainingLives)) || {},
   points: (localStorage.points && JSON.parse(localStorage.points)) || {},
-  badges: (localStorage.solved && JSON.parse(localStorage.solved)) || [],
+  badges: (localStorage.badges && JSON.parse(localStorage.badges)) || [],
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
   language: window.location.hash.substring(1) || 'en',
@@ -68,6 +68,7 @@ var game = {
       game.disableButtons(true, false, false);
       game.showStartScreen(false);
       game.showCodeLine(true)
+      $('#code').focus();
     });
 
     $('#pause').on('click', function() {
@@ -82,7 +83,14 @@ var game = {
       game.showPauseScreen(false);
       game.disableButtons(true, false, false);
       game.showCodeLine(true)
+      $('#code').focus();
     });
+
+    $('#retry').on('click', function() {
+      game.showGameOverScreen(false);
+      game.resetGameStats();
+      game.loadLevel(levels[0])
+    })
 
     $('#check').on('click', function() {
       game.check();
@@ -90,6 +98,11 @@ var game = {
         game.lives--;
         game.saveLives();
         game.printLives();
+        if(game.lives == 0) {
+          console.log('gameover')
+          game.levelEndTimer();
+          game.showGameOverScreen(true);
+        }
 
         if (!$('.frog').hasClass('animated')) {
           game.tryagain();
@@ -172,19 +185,7 @@ var game = {
       if (r) {
         game.levelEndTimer();
 
-        game.level = 0;
-        game.answers = {};
-        game.solved = [];
-        // additions
-        game.intervalId = null;
-        game.levelMiliseconds = null;
-        game.pageStartTimes = {};
-        game.pageEndTimes = {};
-        game.pageTimes = {};
-        game.levelTimes = {};
-        game.remainingLives = {};
-        game.badges = {};
-        game.points = {};
+        game.resetGameStats();
 
         game.loadLevel(levels[0]);
         $('.level-marker').removeClass('solved');
@@ -263,16 +264,7 @@ var game = {
     $(window).on('beforeunload', function() {
       game.saveAnswer();
       game.saveLevelTime();
-      localStorage.setItem('level', game.level);
-      localStorage.setItem('answers', JSON.stringify(game.answers));
-      localStorage.setItem('solved', JSON.stringify(game.solved));
-      localStorage.setItem('colorblind', JSON.stringify(game.colorblind));
-      // additional
-      localStorage.setItem('points', JSON.stringify(game.points));
-      localStorage.setItem('badges', JSON.stringify(game.badges));
-      localStorage.setItem('remainingLives', JSON.stringify(game.remainingLives));
-      localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
-      localStorage.setItem('pageTimes', JSON.stringify(game.pageTimes));
+      game.saveToLocalStorage();
     }).on('hashchange', function() {
       game.language = window.location.hash.substring(1) || 'en';
       game.translate();
@@ -295,7 +287,6 @@ var game = {
   // navigate to previous level
   prev: function() {
     this.level--;
-
     this.loadLevel(this.level);
   },
 
@@ -337,23 +328,33 @@ var game = {
     this.setPoints();
     this.setGameScreen();
     this.setCodeBox();
+    this.setBadges();
     this.setLevelIndicator();
 
-    if(game.levelMiliseconds == 0) {
+    if(game.lives == 0) {
+      game.showGameOverScreen(true);
+      game.showStartScreen(false);
+      game.showPauseScreen(false);
+      game.disableButtons(true, false, true)
+      game.showCodeLine(false)
+    } else if(game.levelMiliseconds == 0) {
       game.showStartScreen(false);
       game.showPauseScreen(false);
       game.disableButtons(true, false, true)
       game.showCodeLine(true)
+      $('#code').focus();
     } else if(game.levelMiliseconds < level.maxTime * 1000) {
       game.showStartScreen(false);
       game.showPauseScreen(true);
       game.disableButtons(true, false, true) 
       game.showCodeLine(true)
+      $('#code').focus();
     } else {
       game.showStartScreen(true);
       game.showPauseScreen(false);
       game.disableButtons(true, false, false) 
       game.showCodeLine(true)
+      $('#code').focus();
     }
 
     // load instructions
@@ -406,7 +407,7 @@ var game = {
 
     game.changed = false;
     game.applyStyles();
-    game.check();
+    !game.levelSolved() && game.check();
   },
 
   loadDocs: function() {
@@ -449,7 +450,7 @@ var game = {
             var pName = text
             var pValue = event.target.textContent.split(' ')[0];
             pValue = getDefaultPropVal(pValue);
-            game.writeCSS(pName, pValue)
+            game.writeCSS(pName, pValue);
 
             game.check();
           });
@@ -507,9 +508,13 @@ var game = {
       game.levelEndTimer();
       game.solved.push(level.name);
       game.savePoints();
+      game.saveLives();        
       game.saveLevelTime();
       game.disableButtons(false, true, true);
       game.showCodeLine(false);
+
+      game.saveToLocalStorage();
+
       game.checkBadges();
 
       ga('send', {
@@ -542,23 +547,26 @@ var game = {
     let pointsTemp = level.maxPoints;
     const timePoints = function() {
       let timePointsTemp = pointsTemp/2;
-      let elapsedTimeSeconds = game.levelMiliseconds/ 1000;
-      if(elapsedTimeSeconds < level.maxTimeIntervals[0]) {
+      let remainingTimeSeconds = game.levelMiliseconds/ 1000;
+      if(remainingTimeSeconds > level.maxTimeIntervals[0]) {
         return timePointsTemp
-      } else if (elapsedTimeSeconds > level.maxTimeIntervals[0] && elapsedTimeSeconds < level.maxTimeIntervals[1]) {
-        return timePointsTemp*0.75;
-      } else if (elapsedTimeSeconds > level.maxTimeIntervals[1] && elapsedTimeSeconds < level.maxTimeIntervals[2]) {
-        return timePointsTemp*0.5;
-      } else if (elapsedTimeSeconds > level.maxTimeIntervals[2] && elapsedTimeSeconds < level.maxTimeIntervals[3]) {
-        return timePointsTemp*0.25;
+      } else if (remainingTimeSeconds > level.maxTimeIntervals[1]) {
+        return timePointsTemp*0.8;
+      } else if (remainingTimeSeconds > level.maxTimeIntervals[2]) {
+        return timePointsTemp*0.6;
+      } else if (remainingTimeSeconds > level.maxTimeIntervals[3]) {
+        return timePointsTemp*0.4;
       } else {
-        return 0;
+        return timePointsTemp*0.2;
       };
     }
+
     const livesPoints = function() {
       let livesPointsTemp = pointsTemp/2;
-      return 25*game.lives;
+      let pointsPerLive = livesPointsTemp/level.lives;
+      return pointsPerLive*game.lives;
     }
+
     const totalLevelPoints = timePoints() + livesPoints();
     game.points[level.name] = Math.floor(totalLevelPoints*10)/10;
     $('#points').html(game.totalPoints())
@@ -735,7 +743,6 @@ var game = {
       game.pageStartTimes[level.name] = new Date();
     }
 
-    console.log(game.levelTimes[level.name])
     if (game.levelTimes[level.name] != null) {
       game.levelMiliseconds = game.levelTimes[level.name];
       this.setTimeIndicator(game.levelMiliseconds);
@@ -743,7 +750,6 @@ var game = {
       game.levelMiliseconds = level.maxTime * 1000;
       this.setTimeIndicator(game.levelMiliseconds);
     };
-    console.log(game.levelMiliseconds)
   },
   
   setLives: function() {
@@ -805,6 +811,14 @@ var game = {
     show ? $('#start-screen').removeClass('d-none') : $('#start-screen').addClass('d-none');
   },
 
+  showGameOverScreen: function(show) {
+    if(game.levelSolved()) {
+      $('#game-over-screen').addClass('d-none');
+      return;
+    }
+    show ? $('#game-over-screen').removeClass('d-none') : $('#game-over-screen').addClass('d-none');
+  },
+
   showCodeLine: function(show) {
     if (game.levelSolved()) {
       $('#code').attr('disabled', true)
@@ -826,15 +840,120 @@ var game = {
   },
 
   checkBadges: function() {
-    let lifeBadge = true;
-    for(let i = game.level; i > game.level - 3; i--) {
-      if(i < 0 || levels[i].lives != game.remainingLives[levels[i].name]) {
-        lifeBadge = false;
+    if(!game.badges.includes('life-badge')) {
+      let lifeBadge = true;
+      for(let i = game.level; i > game.level - 3; i--) {
+        if(i < 0 || levels[i].lives != game.remainingLives[levels[i].name]) {
+          lifeBadge = false;
+        }
+      }
+      if(lifeBadge) {
+        game.badges.push('life-badge');
+        game.badgeAnimation('life-badge');
       }
     }
-    if(lifeBadge) {
-      game.badges.push('life-badge');
+
+    if(!game.badges.includes('points-badge')) {
+      let pointsBadge = true;
+      for(let i = game.level; i > game.level - 3; i--) {
+        if(i < 0 || levels[i].maxPoints != game.points[levels[i].name]) {
+          pointsBadge = false;
+        }
+      }
+      if(pointsBadge) {
+        game.badges.push('points-badge');
+        game.badgeAnimation('points-badge');
+      }
     }
+
+    if(!game.badges.includes('time-badge')) {
+      let timeBadge = true;
+      for(let i = game.level; i > game.level - 3; i--) {
+        if(i < 0 || game.levelTimes[levels[i].name] < (levels[i].maxTimeIntervals[0] * 1000)) {
+          timeBadge = false;
+        }
+      }
+      if(timeBadge) {
+        game.badges.push('time-badge');
+        game.badgeAnimation('time-badge');
+      }
+    }
+
+    if(!game.badges.includes('complete-badge')) {
+      if(levels.length == game.solved.length) {
+        game.badges.push('complete-badge');
+        game.badgeAnimation('complete-badge');
+      }
+    }
+
+    if(!game.badges.includes('all-lessons-badge')) {
+      if(levels.length == game.solved.length) {
+        game.badges.push('all-lessons-badge');
+        game.badgeAnimation('all-lessons-badge');
+      }
+    }
+
+    game.setBadges();
+  },
+
+  setBadges() {
+    game.badges.includes('all-lessons-badge') ? $('#all-lessons-badge .bg').addClass('active') : $('#all-lessons-badge .bg').removeClass('active');
+    game.badges.includes('complete-badge') ? $('#complete-badge .bg').addClass('active') : $('#complete-badge .bg').removeClass('active');
+    game.badges.includes('time-badge') ? $('#time-badge .bg').addClass('active') : $('#time-badge .bg').removeClass('active');
+    game.badges.includes('points-badge') ? $('#points-badge .bg').addClass('active') : $('#points-badge .bg').removeClass('active');
+    game.badges.includes('life-badge') ? $('#life-badge .bg').addClass('active') : $('#life-badge .bg').removeClass('active');
+  },
+
+  saveToLocalStorage: function() {
+    localStorage.setItem('level', game.level);
+    localStorage.setItem('answers', JSON.stringify(game.answers));
+    localStorage.setItem('solved', JSON.stringify(game.solved));
+    localStorage.setItem('colorblind', JSON.stringify(game.colorblind));
+    // additional
+    localStorage.setItem('points', JSON.stringify(game.points));
+    localStorage.setItem('badges', JSON.stringify(game.badges));
+    localStorage.setItem('remainingLives', JSON.stringify(game.remainingLives));
+    localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
+    localStorage.setItem('pageTimes', JSON.stringify(game.pageTimes));
+  },
+
+  resetGameStats: function() {
+    game.level = 0;
+    game.answers = {};
+    game.solved = [];
+    // additions
+    game.intervalId = null;
+    game.levelMiliseconds = null;
+    game.pageStartTimes = {};
+    game.pageEndTimes = {};
+    game.pageTimes = {};
+    game.levelTimes = {};
+    game.remainingLives = {};
+    game.badges = [];
+    game.points = {};
+  },
+
+  badgeAnimation: function(badgeName) {
+    $("#wrapper").append(
+      `<div id="achievement-${badgeName}" class="achievement">
+        <div class="text"><strong>Congratulations!</strong> You just unlocked a new badge!</div>
+        <div class="icon-smiley"></div>
+        <div class="ribbon"></div>
+      </div>`
+    )
+    setTimeout(function() {
+      $(`#achievement-${badgeName} .ribbon`).toggleClass("active");
+      $(`#achievement-${badgeName} .icon-smiley`).toggleClass("active").addClass(badgeName);
+      $(`#achievement-${badgeName}`).toggleClass("active");
+      setTimeout(function() {
+        $(`#achievement-${badgeName} .ribbon`).toggleClass("active");
+        $(`#achievement-${badgeName} .icon-smiley`).toggleClass("active");
+        $(`#achievement-${badgeName}`).toggleClass("active");
+        setTimeout(function() {
+          $(`#achievement-${badgeName}`).remove();
+        }, 2000)
+      }, 5000);
+    }, 500)
   }
 };
 

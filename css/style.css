@@ -88,6 +88,26 @@ body {
   background-repeat: no-repeat;
 }
 
+#life-badge .bg.active {
+  background-image: url("../images/life-badge.png");
+}
+
+#points-badge .bg.active {
+  background-image: url("../images/points-badge.png");
+}
+
+#time-badge .bg.active {
+  background-image: url("../images/time-badge.png");
+}
+
+#complete-badge .bg.active {
+  background-image: url("../images/complete-badge.png");
+}
+
+#all-lessons-badge .bg.active {
+  background-image: url("../images/all-lessons-badge.png");
+}
+
 .title {
   margin: 0.5rem 0 0;
   text-transform: uppercase;
@@ -470,7 +490,7 @@ button#check:not(.disabled):hover {
   background-color: black;
 }
 
-#pause-screen, #start-screen {
+#pause-screen, #start-screen, #game-over-screen {
   width: 100%;
   height: 100%;
   background: rgba(0, 0, 0, 0.7);
@@ -776,4 +796,216 @@ button#check:not(.disabled):hover {
 
 .d-none {
   display: none !important;
+}
+
+
+/* Achivement Styles */
+#wrapper
+{
+  position:absolute;
+  display: flex;
+  flex-direction: column;
+  gap: 6em;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
+  z-index: 20;
+}
+
+.achievement 
+{
+  width: auto;
+  margin: 0 auto;
+  display: inline-block;
+  visibility: collapse;
+  position: relative;
+  box-sizing: border-box;
+  padding: 14px 128px 14px 24px;
+  background: #373B44;
+  box-shadow: 0px 0px 2px 0px rgba(0,0,0,0.10), 0px 2px 2px 0px rgba(0,0,0,0.24);
+  border-radius: 39px;
+}
+
+.text 
+{
+  color: #f1f1f1;
+  font-family: 'Roboto', helvetica, arial, sans-serif;
+  font-size: 16px;
+}
+
+.icon-smiley
+{
+  background-color: #03A9F4;
+  width: 120px;
+  height: 120px;
+  position: absolute;
+  top:-40px;
+  right: -10px;
+  z-index: 50;
+  border-radius: 60px;
+  box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.10), 0px 4px 4px 0px rgba(0,0,0,0.24);
+}
+
+.icon-smiley {
+  background-position: center;
+  background-size: contain;
+}
+.icon-smiley.life-badge {
+  background-image: url(../images/life-badge.png);
+}
+
+.icon-smiley.time-badge {
+  background-image: url(../images/time-badge.png);
+}
+
+.icon-smiley.all-lessons-badge {
+  background-image: url(../images/all-lessons-badge.png);
+}
+
+.icon-smiley.complete-badge {
+  background-image: url(../images/complete-badge.png);
+}
+
+.icon-smiley.points-badge {
+  background-image: url(../images/points-badge.png);
+}
+
+.icon-smiley::before
+{
+  content: ' ';
+  width: auto;
+  height: 100%;
+  padding: 20px;
+  display: block;
+  z-index: 99;
+  background-image: url('https://dl.dropboxusercontent.com/u/37351873/smiley.svg');
+  background-repeat: no-repeat;
+  background-position: 16px 15px;
+}
+
+.ribbon
+{
+  z-index: 30;
+  background: #F41A6C;
+  width: 86px;
+  height: 20px;
+  position: absolute;
+  text-align: center;
+  border: 0;
+  right: 8px;
+  top:0px;
+}
+.ribbon:after 
+{
+    content: "";
+    position: absolute;
+    bottom: -60px;
+    left: 0;
+    height: 0;
+    width: 0;
+    border: solid 43px #F41A6C;
+    border-bottom-color: transparent;
+}
+
+.achievement 
+{ 
+  visibility: collapse;
+  opacity: 0;
+  transition: visibility 1s, opacity 1s; 
+  transform: translateX(0px) translateY(90px);
+  transition: all 1000.00ms ease;
+  -webkit-transform: translateX(0px) translateY(90px);
+  -webkit-transition: all 1000.00ms ease;
+}
+
+.achievement.active 
+{ 
+  visibility: visible;
+  opacity: 1;
+  transition: visibility 1s, opacity 1s; 
+  visibility: visible;
+  transform: translateX(0px) translateY(-100.00px);
+  -webkit-transform: translateX(0px) translateY(-100.00px);
+}
+
+.icon-smiley 
+{ 
+  visibility: collapse;
+  transform: translateY(26.00px);
+  transition: all 1000.00ms ease;
+  -webkit-transform: translateY(26.00px);
+  -webkit-transition: all 1000.00ms ease;
+}
+
+.icon-smiley.active 
+{ 
+  visibility: visible;
+  transform: none;
+  -webkit-transform: none;
+}
+
+.ribbon 
+{ 
+  visibility: collapse;
+  transform: translateX(0px) translateY(50px) scaleY(0.5);
+  transition: all 1000.00ms ease;
+  transition-delay: 100ms;
+  -webkit-transform: translateX(0px) translateY(50px) scaleY(0.5);
+  -webkit-transition: all 1000.00ms ease;
+  -webkit-transition-delay: 100ms;
+}
+
+.ribbon.active 
+{ 
+  visibility: visible;
+  transform: translateX(0px) translateY(54.00px) scaleY(1);
+  transition-delay: 100ms;
+  -webkit-transform: translateX(0px) translateY(54.00px) scaleY(1);
+  -webkit-transition-delay: 100ms;
+}
+
+@media (max-width: 728px)
+{
+  .achievement
+  {
+    width: 300px;
+    max-width: 320px;
+    margin: 0 0;
+    padding: 20px 24px 20px auto;
+  }
+  .icon-smiley
+  {
+    top: 65px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+  }
+  .ribbon
+  {
+    left: 0;
+    right: 0;
+    top: 90px;
+    margin: 0 auto;
+    
+  }
+  
+  .achievement 
+  { 
+    visibility: collapse;
+    opacity: 0;
+    transition: visibility 1s, opacity 1s; 
+    transform: translateX(0px) translateY(90px);
+    transition: all 1000.00ms ease;
+    -webkit-transform: translateX(0px) translateY(90px);
+    -webkit-transition: all 1000.00ms ease;
+  }
+  .achievement.active 
+  { 
+    visibility: visible;
+    opacity: 1;
+    transition: visibility 1s, opacity 1s; 
+    transform: translateX(0px) translateY(-200.00px);
+    -webkit-transform: translateX(0px) translateY(-200.00px);
+  }
 }
