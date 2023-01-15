@@ -21,8 +21,108 @@
   <body>
     <div id="wrapper">
     </div>
+    <section id="sidebar-introduction">
+      <div class="header">
+        <div>
+          <h1 id="introduction-title" class="title">Welcome to Flexbox Froggy</h1>
+        </div>
+      </div>
+      <div id="instructions-introduction">
+      </div>
+      <table class="highscore" style="display: none;">
+        <thead>
+          <tr class="table-title">
+            <th colspan="3">High Score</th>
+          </tr>
+          <tr>
+            <th>No.</th>
+            <th>Name</th>
+            <th>Points</th>
+          </tr>
+        </thead>
+        <tbody class="highscore-data">
+        </tbody>
+      </table>
+      <button id="introduction-start-game" style="display: block; margin: 1em auto;">Start Game</button>
+    </section>
 
-    <section id="sidebar">
+    <section id="sidebar-finish" style="display: none">
+      <div class="header">
+        <div>
+          <h1 class="title">Flexbox Froggy</h1>
+        </div>
+      </div>
+      <div id="finish-screen-1">
+        <p id="finish-text"></p>
+        <div id="finish-stats">
+          <div id="points-finish">
+            <span class="finish-points">0</span>&nbsp;<span>XP</span>
+          </div>
+          <div id="badges-finish">
+            <div class="all-lessons-badge badges">
+              <div class="bg"></div>
+            </div>
+            <div class="complete-badge badges">
+              <div class="bg"></div>
+            </div>
+            <div class="life-badge badges">
+              <div class="bg"></div>
+            </div>
+            <div class="points-badge badges">
+              <div class="bg"></div>
+            </div>
+            <div class="time-badge badges">
+              <div class="bg"></div>
+            </div>
+          </div>
+        </div>
+        <p id="highscore-form">
+          <input type="text" id="highscore-name-input" pattern="[A-Za-z0-9]{3,10}">
+          <button id="highscore-form-submit" disabled="disabled"></button>
+        </p>
+      </div>
+
+      <div id="finish-screen-2" style="display: none;">
+        <div id="finish-stats-small">
+          <div id="player-name">Alex</div>
+          <div><span class="finish-points">0</span>&nbsp;<span>XP</span></div>
+          <div id="badges-indicator">
+            <div class="all-lessons-badge" class="badges">
+              <div class="bg"></div>
+            </div>
+            <div class="complete-badge badges">
+              <div class="bg"></div>
+            </div>
+            <div class="life-badge badges">
+              <div class="bg"></div>
+            </div>
+            <div class="points-badge badges">
+              <div class="bg"></div>
+            </div>
+            <div class="time-badge badges">
+              <div class="bg"></div>
+            </div>
+          </div>
+        </div>
+        <table class="highscore" style="display: none;">
+          <thead>
+            <tr class="table-title">
+              <th colspan="3">High Score</th>
+            </tr>
+            <tr>
+              <th>No.</th>
+              <th>Name</th>
+              <th>Points</th>
+            </tr>
+          </thead>
+          <tbody class="highscore-data">
+          </tbody>
+        </table>
+        <button class="retry translate" style="display: block; margin: 1em auto;">Play Again!</button>
+      </div>
+    </section>
+
+    <section id="sidebar" style="display: none">
       <div class="header">
         <div>
           <h1 class="title">Flexbox Froggy</h1>
@@ -37,25 +137,45 @@
             </div>
           </div>
           <div id="badges-indicator">
-            <div id="all-lessons-badge" class="badges">
+            <div id="all-lessons-badge" class="all-lessons-badge badges">
               <div class="bg"></div>
-              <div class="info tooltip"></div>
+              <div id="info-all-lessons-badge" class="tooltip">
+                <span id="info-all-lessons-badge-progress"></span>
+                <span id="info-all-lessons-badge-header"></span>
+                <span id="info-all-lessons-badge-body"></span>
+              </div>
             </div>
-            <div id="complete-badge" class="badges">
+            <div id="complete-badge" class="complete-badge badges">
               <div class="bg"></div>
-              <div class="info tooltip"></div>
+              <div id="info-complete-badge" class="tooltip">
+                <span id="info-complete-badge-progress"></span>
+                <span id="info-complete-badge-header"></span>
+                <span id="info-complete-badge-body"></span>
+              </div>
             </div>
-            <div id="life-badge" class="badges">
+            <div id="life-badge" class="life-badge badges">
               <div class="bg"></div>
-              <div class="info tooltip"></div>
+              <div id="info-life-badge" class="tooltip">
+                <span id="info-life-badge-progress"></span>
+                <span id="info-life-badge-header"></span>
+                <span id="info-life-badge-body"></span>
+              </div>
             </div>
-            <div id="points-badge" class="badges">
+            <div id="points-badge" class="points-badge badges">
               <div class="bg"></div>
-              <div class="info tooltip"></div>
+              <div id="info-points-badge" class="tooltip">
+                <span id="info-points-badge-progress"></span>
+                <span id="info-points-badge-header"></span>
+                <span id="info-points-badge-body"></span>
+              </div>
             </div>
-            <div id="time-badge" class="badges">
+            <div id="time-badge" class="time-badge badges">
               <div class="bg"></div>
-              <div class="info tooltip"></div>
+              <div id="info-time-badge" class="tooltip">
+                <span id="info-time-badge-progress"></span>
+                <span id="info-time-badge-header"></span>
+                <span id="info-time-badge-body"></span>
+              </div>
             </div>
           </div>
         </div>
@@ -102,7 +222,7 @@
         <div id="game-over-screen" class="d-none">
           <div id="screen-instructions">
             <span>Game Over</span>
-            <button id="retry" class="translate">Try Again!</button>
+            <button class="retry translate">Try Again!</button>
           </div>
         </div>
         <div id="css">
@@ -112,7 +232,7 @@
           <pre id="after"></pre>
         </div>
         <div id="editor-buttons">
-          <button id="pause" class="pause translate">Pause</button>
+          <button id="pause" class="pause translate v-collapse">Pause</button>
           <button id="check" class="translate">Check</button>
           <button id="next" class="translate">Next</button>
         </div>
@@ -173,7 +293,9 @@
       </div>
     </section>
     <section id="view">
-      <div id="board">
+      <div id="board-introduction">
+      </div>
+      <div id="board" class="v-collapse">
         <div id="pond">
         </div>
         <div id="background">
@@ -185,8 +307,10 @@
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="js/levels.js"></script>
     <script src="js/docs.js"></script>
+    <script src="js/badges.js"></script>
+    <script src="js/introduction.js"></script>
     <script src="js/messages.js"></script>
-    <script src="js/game.js"></script>
+    <script type="module" src="js/game.js"></script>
     <script>
       (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
       (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),

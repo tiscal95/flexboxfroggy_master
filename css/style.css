@@ -28,6 +28,35 @@ a[href="#fa"] {
   font-family: Tahoma, Verdana, Segoe, sans-serif;
 }
 
+strong {
+  font-size: 11pt;
+}
+
+#instructions-introduction p.rule {
+  line-height: 2em;
+  background-color: #6db36e;
+  padding: 1em;
+}
+
+#instructions-introduction p img {
+  vertical-align: middle;
+}
+
+#board-introduction {
+  position: sticky;
+  top: 0;
+  width: 50vw;
+  height: 50vw;
+  min-width: 300px;
+  min-height: 300px;
+  max-width: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  background-image: url("../images/map.png");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
 body {
   display: flex;
   min-width: 600px;
@@ -37,7 +66,7 @@ body {
   font-family: 'PT Sans', sans-serif;
 }
 
-#sidebar {
+#sidebar, #sidebar-introduction, #sidebar-finish {
   width: 50%;
   min-width: 300px;
   position: relative;
@@ -65,9 +94,13 @@ body {
   justify-content: space-between;
 }
 
-#all-lessons-badge, #complete-badge, #life-badge, #points-badge, #time-badge {
+.all-lessons-badge, .complete-badge, .life-badge, .points-badge, .time-badge {
   width: 40px;
   height: 50px;
+}
+
+.all-lessons-badge:active, .complete-badge:active, .life-badge:active, .points-badge:active, .time-badge:active {
+  pointer-events: none;
 }
 
 .frog-lives .bg {
@@ -79,7 +112,7 @@ body {
   background-repeat: no-repeat;
 }
 
-#all-lessons-badge .bg, #complete-badge .bg, #life-badge .bg, #points-badge .bg, #time-badge .bg  {
+.all-lessons-badge .bg, .complete-badge .bg, .life-badge .bg, .points-badge .bg, .time-badge .bg  {
   background-image: url("../images/badge-inactive.png");
   width: 90%;
   height: 90%;
@@ -88,7 +121,7 @@ body {
   background-repeat: no-repeat;
 }
 
-#all-lessons-badge .info, #complete-badge .info, #life-badge .info, #points-badge .info, #time-badge .info  {
+.all-lessons-badge .info, .complete-badge .info, .life-badge .info, .points-badge .info, .time-badge .info  {
   display: none;
   top: 30px;
   right: 31px;
@@ -98,28 +131,61 @@ body {
   z-index: 80;
 }
 
-#life-badge.tooltip {
-  
+#progress-bar-border {
+  border: 1px solid #228B24;
+  border-radius: 5px;
+  height: 10px;
 }
 
-#life-badge .bg.active {
-  background-image: url("../images/life-badge.png");
+#progress-bar {
+  border-radius: 5px;
+  height: 10px;
+  background-color: #228B24;
+  margin-top: -1px;
 }
 
-#points-badge .bg.active {
-  background-image: url("../images/points-badge.png");
+.life-badge .bg.gold {
+  background-image: url("../images/life-badge-gold.png");
 }
 
-#time-badge .bg.active {
-  background-image: url("../images/time-badge.png");
+.life-badge .bg.silver {
+  background-image: url("../images/life-badge-silver.png");
 }
 
-#complete-badge .bg.active {
-  background-image: url("../images/complete-badge.png");
+.life-badge .bg.bronze {
+  background-image: url("../images/life-badge-bronze.png");
 }
 
-#all-lessons-badge .bg.active {
-  background-image: url("../images/all-lessons-badge.png");
+.points-badge .bg.gold {
+  background-image: url("../images/points-badge-gold.png");
+}
+
+.points-badge .bg.silver {
+  background-image: url("../images/points-badge-silver.png");
+}
+
+.points-badge .bg.bronze {
+  background-image: url("../images/points-badge-bronze.png");
+}
+
+.time-badge .bg.gold {
+  background-image: url("../images/time-badge-gold.png");
+}
+
+.time-badge .bg.silver {
+  background-image: url("../images/time-badge-gold-silver.png");
+}
+
+.time-badge .bg.bronze {
+  background-image: url("../images/time-badge-bronze.png");
+}
+
+.complete-badge .bg.gold {
+  background-image: url("../images/complete-badge-gold.png");
+}
+
+.all-lessons-badge .bg.gold {
+  background-image: url("../images/all-lessons-badge-gold.png");
 }
 
 .title {
@@ -127,6 +193,48 @@ body {
   text-transform: uppercase;
   font-family: 'Fredoka One', cursive;
   font-size: 28px;
+}
+
+#highscore-form {
+  margin-top: 4em;
+  width: 100%;
+  display: flex;
+  gap: 1em;
+  flex-direction: column;
+  align-items: center;
+}
+
+#highscore-form-submit {
+  width: 20rem;
+}
+
+#highscore-form-submit:hover {
+  background-color: #F12D22;
+}
+
+#highscore-form-submit:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+#highscore-name-input, #highscore-form-submit {
+  display: block;
+}
+
+#highscore-name-input {
+  height: 2.5em;
+  width: 20rem;
+  padding: 1em;
+  border-radius: 5px;
+  border: none;
+  text-align: center;
+}
+
+#highscore-name-input:invalid {
+  color: #D11606;
+}
+#highscore-name-input:valid {
+  color: #3fa142;
 }
 
 pre {
@@ -157,6 +265,11 @@ a:hover {
 .help {
   cursor: pointer;
   border-bottom: 1px solid rgba(255, 255, 255, 0.7);
+}
+
+#info-all-lessons-badge, #info-complete-badge, #info-points-badge, #info-time-badge, #info-life-badge {
+  display: none;
+  width: 200px;
 }
 
 .tooltip {
@@ -316,7 +429,7 @@ pre {
   user-select: none;
 }
 
-#levelsWrapper {
+#levelsWrapper, #info {
   display: none;
   top: 30px;
   right: 31px;
@@ -370,6 +483,45 @@ pre {
   flex-direction: row;
   gap: 0.2em;
   height: 45px;
+  cursor: pointer;
+}
+
+#finish-stats {
+  margin-top: 5em;
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
+}
+
+#finish-stats-small {
+  background-color: rgba(255, 255, 255, 0.2);
+  width: 100%;
+  margin: 2em auto 0 auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 2em;
+}
+
+#badges-finish {
+  display: flex;
+  flex-direction: row;
+  gap: 0.2em;
+  cursor: pointer;
+  justify-content: center;
+}
+
+#badges-finish div {
+  height: 60px;
+  width: 60px;
+}
+
+#points-finish {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  font-size: 2em;
 }
 
 #level-indicator, #time-indicator, #points-indicator {
@@ -733,11 +885,11 @@ button#check:not(.disabled):hover {
   }
 
   body,
-  #sidebar {
+  #sidebar, #sidebar-introduction {
     font-size: 13px;
   }
 
-  #sidebar {
+  #sidebar, #sidebar-introduction {
     width: 100%;
   }
 
@@ -773,6 +925,10 @@ button#check:not(.disabled):hover {
 
 .d-none {
   display: none !important;
+}
+
+.v-collapse {
+  visibility: collapse !important;
 }
 
 /* Native by BuySellAds */
@@ -864,24 +1020,49 @@ button#check:not(.disabled):hover {
   background-position: center;
   background-size: contain;
 }
-.icon-smiley.life-badge {
-  background-image: url(../images/life-badge.png);
+
+.icon-smiley.life-badge-gold {
+  background-image: url(../images/life-badge-gold.png);
 }
 
-.icon-smiley.time-badge {
-  background-image: url(../images/time-badge.png);
+.icon-smiley.life-badge-silver {
+  background-image: url(../images/life-badge-silver.png);
 }
 
-.icon-smiley.all-lessons-badge {
-  background-image: url(../images/all-lessons-badge.png);
+.icon-smiley.life-badge-bronze {
+  background-image: url(../images/life-badge-bronze.png);
 }
 
-.icon-smiley.complete-badge {
-  background-image: url(../images/complete-badge.png);
+.icon-smiley.time-badge-gold {
+  background-image: url(../images/time-badge-gold.png);
 }
 
-.icon-smiley.points-badge {
-  background-image: url(../images/points-badge.png);
+.icon-smiley.time-badge-silver {
+  background-image: url(../images/time-badge-silver.png);
+}
+
+.icon-smiley.time-badge-bronze {
+  background-image: url(../images/time-badge-bronze.png);
+}
+
+.icon-smiley.points-badge-gold {
+  background-image: url(../images/points-badge-gold.png);
+}
+
+.icon-smiley.points-badge-silver {
+  background-image: url(../images/points-badge-silver.png);
+}
+
+.icon-smiley.points-badge-bronze {
+  background-image: url(../images/points-badge-bronze.png);
+}
+
+.icon-smiley.all-lessons-badge-gold {
+  background-image: url(../images/all-lessons-badge-gold.png);
+}
+
+.icon-smiley.complete-badge-gold {
+  background-image: url(../images/complete-badge-gold.png);
 }
 
 .icon-smiley::before
@@ -1023,3 +1204,46 @@ button#check:not(.disabled):hover {
     -webkit-transform: translateX(0px) translateY(-200.00px);
   }
 }
+
+
+/* Highscore */
+
+.highscore {
+  background-color: #3f1f68;
+  color: #228B24;
+  margin: 0 auto;
+  text-align: center;
+  font-family: 'Fredoka One', cursive;
+}
+
+.table-title th {
+  font-size: 28pt;
+  padding: 0 !important;
+  letter-spacing: 0.3em;
+  color: #ccc;
+}
+
+table {
+  border-collapse: separate;
+  border-spacing: 10px;
+  color: #000;
+  width: 100%;
+}
+
+td, th {
+  padding: 0.3em;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+th {
+  font-weight: bolder;
+  font-size: 15pt;
+}
+
+tr:first-child th:first-child { border-top-left-radius: 10px; }
+tr:first-child th:last-child { border-top-right-radius: 10px; }
+
+tr:last-child td:first-child { border-bottom-left-radius: 10px; }
+tr:last-child td:last-child { border-bottom-right-radius: 10px; }
