@@ -1,7 +1,7 @@
 badges_info_text = {
     'life-badge-obtained': {
         'header': {
-            'de': '<strong>Life Badge (Gold)</strong><br>',
+            'de': '<strong>Leben Badge (Gold)</strong><br>',
             'en': '<strong>Life Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -11,7 +11,7 @@ badges_info_text = {
     },
     'life-badge-gold': {
         'header': {
-            'de': '<strong>Life Badge (Gold)</strong><br>',
+            'de': '<strong>Leben Badge (Gold)</strong><br>',
             'en': '<strong>Life Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -22,7 +22,7 @@ badges_info_text = {
     },
     'life-badge-silver': {
         'header': {
-            'de': '<strong>Life Badge (Silber)</strong><br>',
+            'de': '<strong>Leben Badge (Silber)</strong><br>',
             'en': '<strong>Life Badge (Silver)</strong><br>'
         },
         'body' : {
@@ -33,7 +33,7 @@ badges_info_text = {
     },
     'life-badge-bronze': {
         'header': {
-            'de': '<strong>Life Badge (Bronze)</strong><br>',
+            'de': '<strong>Leben Badge (Bronze)</strong><br>',
             'en': '<strong>Life Badge (Bronze)</strong><br>'
         },
         'body' : {
@@ -44,7 +44,7 @@ badges_info_text = {
     },
     'points-badge-obtained': {
         'header': {
-            'de': '<strong>Points Badge (Gold)</strong><br>',
+            'de': '<strong>Punkte Badge (Gold)</strong><br>',
             'en': '<strong>Points Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -54,7 +54,7 @@ badges_info_text = {
     },
     'points-badge-gold': {
         'header': {
-            'de': '<strong>Points Badge (Gold)</strong><br>',
+            'de': '<strong>Punkte Badge (Gold)</strong><br>',
             'en': '<strong>Points Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -65,7 +65,7 @@ badges_info_text = {
     },
     'points-badge-silver': {
         'header': {
-            'de': '<strong>Points Badge (Silber)</strong><br>',
+            'de': '<strong>Punkte Badge (Silber)</strong><br>',
             'en': '<strong>Points Badge (Silver)</strong><br>'
         },
         'body' : {
@@ -76,7 +76,7 @@ badges_info_text = {
     },
     'points-badge-bronze': {
         'header': {
-            'de': '<strong>Points Badge (Bronze)</strong><br>',
+            'de': '<strong>Punkte Badge (Bronze)</strong><br>',
             'en': '<strong>Points Badge (Bronze)</strong><br>'
         },
         'body' : {
@@ -87,7 +87,7 @@ badges_info_text = {
     },
     'time-badge-obtained': {
         'header': {
-            'de': '<strong>Time Badge (Gold)</strong><br>',
+            'de': '<strong>Zeit Badge (Gold)</strong><br>',
             'en': '<strong>Time Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -97,7 +97,7 @@ badges_info_text = {
     },
     'time-badge-gold': {
         'header': {
-            'de': '<strong>Time Badge (Gold)</strong><br>',
+            'de': '<strong>Zeit Badge (Gold)</strong><br>',
             'en': '<strong>Time Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -108,7 +108,7 @@ badges_info_text = {
     },
     'time-badge-silver': {
         'header': {
-            'de': '<strong>Time Badge (Silber)</strong><br>',
+            'de': '<strong>Zeit Badge (Silber)</strong><br>',
             'en': '<strong>Time Badge (Silver)</strong><br>'
         },
         'body' : {
@@ -119,7 +119,7 @@ badges_info_text = {
     },
     'time-badge-bronze': {
         'header': {
-            'de': '<strong>Time Badge (Bronze)</strong><br>',
+            'de': '<strong>Zeit Badge (Bronze)</strong><br>',
             'en': '<strong>Time Badge (Bronze)</strong><br>'
         },
         'body' : {
@@ -130,7 +130,7 @@ badges_info_text = {
     },
     'all-lessons-badge-obtained': {
         'header': {
-            'de': '<strong>Lesson Badge (Gold)</strong><br>',
+            'de': '<strong>Übungs Badge (Gold)</strong><br>',
             'en': '<strong>Lesson Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -140,7 +140,7 @@ badges_info_text = {
     },
     'all-lessons-badge-gold': {
         'header': {
-            'de': '<strong>Lesson Badge</strong><br>',
+            'de': '<strong>Übungs Badge</strong><br>',
             'en': '<strong>Lesson Badge</strong><br>'
         },
         'body' : {
@@ -151,7 +151,7 @@ badges_info_text = {
     },
     'complete-badge-obtained': {
         'header': {
-            'de': '<strong>Complete Badge (Gold)</strong><br>',
+            'de': '<strong>Spiel Komplett Badge (Gold)</strong><br>',
             'en': '<strong>Complete Badge (Gold)</strong><br>'
         },
         'body' : {
@@ -161,7 +161,7 @@ badges_info_text = {
     },
     'complete-badge-gold': {
         'header': {
-            'de': '<strong>Complete Badge</strong><br>',
+            'de': '<strong>Spiel Komplett Badge</strong><br>',
             'en': '<strong>Complete Badge</strong><br>'
         },
         'body' : {

@@ -21,6 +21,8 @@
   <body>
     <div id="wrapper">
     </div>
+    <div id="blur-screen" style="display: none;">
+    </div>
     <section id="sidebar-introduction">
       <div class="header">
         <div>
@@ -43,7 +45,7 @@
         <tbody class="highscore-data">
         </tbody>
       </table>
-      <button id="introduction-start-game" style="display: block; margin: 1em auto;">Start Game</button>
+      <button id="startGame" class="translate" style="display: block; margin: 1em auto;">Start Game</button>
     </section>
 
     <section id="sidebar-finish" style="display: none">
@@ -133,8 +135,12 @@
         <div id="stats-row-1">
           <div id="lives-indicator">
             <div class="frog-lives red">
-              <div class="bg animated pulse infinite"></div>
+              <div id="lives" class="bg animated pulse infinite"></div>
             </div>
+          </div>
+          <div id="info-tutorial-lifes" class="tooltip">
+            <span class="info-tutorial-text"></span>
+            <span class="info-tutorial-next"><button id="nextTutorial6" class="tutorial-next translate"></button></span>
           </div>
           <div id="badges-indicator">
             <div id="all-lessons-badge" class="all-lessons-badge badges">
@@ -178,6 +184,10 @@
               </div>
             </div>
           </div>
+          <div id="info-tutorial-badges" class="tooltip">
+            <span class="info-tutorial-text"></span>
+            <span class="info-tutorial-next"><button id="nextTutorial1" class="tutorial-next translate"></button></span>
+          </div>
         </div>
         <div id="stats-row-2">
           <div id="level-counter">
@@ -205,6 +215,10 @@
               </span>
             </span>
           </div>
+          <div id="info-tutorial-time" class="tooltip">
+            <span class="info-tutorial-text"></span>
+            <span class="info-tutorial-next"><button id="nextTutorial2" class="tutorial-next translate"></button></span>
+          </div>
         </div>
       </div>
       <div id="editor">
@@ -229,12 +243,24 @@
           <div class="line-numbers">1<br>2<br>3<br>4<br>5<br>6<br>7<br>8<br>9<br>10</div>
           <pre id="before"></pre>
           <textarea id="code" autofocus autocapitalize="none"></textarea>
+          <div id="info-tutorial-code" class="tooltip">
+            <span class="info-tutorial-text"></span>
+            <span class="info-tutorial-next"><button id="nextTutorial3" class="tutorial-next translate"></button></span>
+          </div>
           <pre id="after"></pre>
         </div>
         <div id="editor-buttons">
           <button id="pause" class="pause translate v-collapse">Pause</button>
           <button id="check" class="translate">Check</button>
+          <div id="info-tutorial-check" class="tooltip">
+            <span class="info-tutorial-text"></span>
+            <span class="info-tutorial-next"><button id="nextTutorial4" class="tutorial-next translate"></button></span>
+          </div>
           <button id="next" class="translate">Next</button>
+          <div id="info-tutorial-nextlevel" class="tooltip">
+            <span class="info-tutorial-text"></span>
+            <span class="info-tutorial-next"><button id="nextTutorial5" class="tutorial-next translate"></button></span>
+          </div>
         </div>
       </div>
       <div id="share">

@@ -1,20 +1,35 @@
 var introduction_text = {
     'highscore': ``,
-    'tutorial': {
-        'en': `<p>Flexbox Froggy is a game where you help Froggy and his friends by writing CSS code! The aim of the game is to guide the frogs to the lilypads using CSS-Flexbox commands. There are instructions for every level above the code box that help you in case you are not yet familiar with Flexbox.</p>
-        <p class="rule">You have to insert your code into the code box on the left side of the screen. By pressing <img src="images/introduction-check.png" height="30"> your code will be executed and you will be able to see the result on the right side of the screen. If you click on the Check button, your code will be executed and assessed.</p>
-        <p class="rule">For every level, you will have a certain amount of lives <img src="images/introduction-lifes.png" height="30">. If your answer is wrong you will lose one life. If you lose all lives, the game is over and you will have to start from the beginning again.</p>
-        <p class="rule">If your code is correct, you can move onto the next level using the <img src="images/introduction-next.png" height="30"> Button</p>
-        <p class="rule">Every level will a time limit <img src="images/introduction-time.png" height="30">. Once you start the the level, you won't be able to stop the clock. If you finish the game within the time frame, you will get extra points depending on your speed. If you finish the level after the clock has hit 00:00, you will get no extra points.</p>
-        <p class="rule">You can obtain several badges <img src=""> throughout the game depending on how well you perform.</p>
-        <p class="rule">If you are colorblind you can change to colorblind mode in the games settings <img src="images/introduction-settings.png" height="30">.</p>`,
-        'de': `<p>Flexbox Froggy is a game where you help Froggy and his friends by writing CSS code! The aim of the game is to guide the frogs to the lilypads using CSS-Flexbox commands. There are instructions for every level above the code box that help you in case you are not yet familiar with Flexbox.</p>
-        <p class="rule">You have to insert your code into the code box on the left side of the screen. By pressing <img src="images/introduction-check.png" height="30"> your code will be executed and you will be able to see the result on the right side of the screen. If you click on the Check button, your code will be executed and assessed.</p>
-        <p class="rule">For every level, you will have a certain amount of lives <img src="images/introduction-lifes.png" height="30">. If your answer is wrong you will lose one life. If you lose all lives, the game is over and you will have to start from the beginning again.</p>
-        <p class="rule">If your code is correct, you can move onto the next level using the <img src="images/introduction-next.png" height="30"> Button</p>
-        <p class="rule">Every level will a time limit <img src="images/introduction-time.png" height="30">. Once you start the the level, you won't be able to stop the clock. If you finish the game within the time frame, you will get extra points depending on your speed. If you finish the level after the clock has hit 00:00, you will get no extra points.</p>
-        <p class="rule">You can obtain several badges <img src=""> throughout the game depending on how well you perform.</p>
-        <p class="rule">If you are colorblind you can change to colorblind mode in the games settings <img src="images/introduction-settings.png" height="30">.</p>`,
+    'intro': {
+        'en': '<p>Flexbox Froggy is a game where you help Froggy and his friends by writing CSS code! The aim of the game is to guide the frogs to the lilypads using CSS-Flexbox commands.',
+        'de': '<p>Flexbox Froggy ist ein Spiel, bei dem du Froggy und seinen Freunden hilfst, indem du CSS-Code schreibst! Ziel des Spiels ist es, die Frösche mit CSS-Flexbox-Befehlen zu den Lilypads zu führen. Es gibt Anweisungen für jedes Level über der Code-Box, die dir helfen, falls du mit Flexbox noch nicht vertraut bist.</p>'
+    }
+}
+
+var tutorial_text = {
+    'info-tutorial-code': {
+        'en': 'You have to insert your code into this code box.',
+        'de': 'Gebe hier deinen Code zur Lösung der Aufgabe ein.'
+    }, 
+    'info-tutorial-check': {
+        'en': 'By pressing this button your code will be executed and you will be able to see the result on the right side of the screen.',
+        'de': 'Drücke diesen Button, um deinen Code auszuführen. Du kannst das Ergebnis auf der rechten Seite des Bildschirms überprüfen.'
+    }, 
+    'info-tutorial-lifes': {
+        'en': 'For every level, you will have a certain amount of lives. If your answer is wrong you will lose one life. If you lose all lives, the game is over and you will have to start from the beginning again.',
+        'de': 'Für jedes Level hast eine gewisse Anzahl an Leben. Wenn deine Antwort falsch ist, verlierst du ein Leben. Wenn du alle Leben verlierst, musst du von vorne beginnen.'
+    }, 
+    'info-tutorial-nextlevel': {
+        'en': 'If your code is correct, you can click here to move onto the next level.',
+        'de': 'Wenn dein Code korrekt ist, klicke hier, um zum nächsten Level zu kommen.'
+    }, 
+    'info-tutorial-time': {
+        'en': 'Every level will a time limit. Once you start the the level, you can not stop the clock. If you finish the game within the time give, you will get extra points depending on your speed.',
+        'de': 'Jedes Level hat ein Zeitlimit. Wenn du ein Level einmal gestartet hast, kannst du die Zeit nicht mehr stoppen. Wenn du das Level innerhalb des Zeitlimits beendest, bekommst du je nach Geschwindigkeit Bonuspunkte.'
+    }, 
+    'info-tutorial-badges': {
+        'en': 'You can obtain several badges throughout the game depending on how well you perform.',
+        'de': 'Du kannst während des Spiels verschiedene Badges verdienen.'
     }
 }
 

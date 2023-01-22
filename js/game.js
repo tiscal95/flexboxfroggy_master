@@ -67,7 +67,6 @@ var game = {
     }
 
     if (game.gameFinish == 'true') {
-      console.log('jey')
       game.win();
       game.showFinishScreen(true);
       if (game.nameSubmit == 'true') {
@@ -111,9 +110,15 @@ var game = {
         game.loadHighscoreFinish();
       }, 2000)
     });
-
-    $('#introduction-start-game').on('click', function() {
+    
+    const tutorial = this.makeTutorial();
+    $('#startGame').on('click', function() {
       game.showIntroduction(false);
+      tutorial();
+    });
+
+    $('.tutorial-next').on('click', function() {
+      tutorial();
     });
 
     $('#start').on('click', function() {
@@ -153,9 +158,9 @@ var game = {
         game.saveLives();
         game.printLives();
         if(game.lives == 0) {
-          console.log('gameover')
           game.levelEndTimer();
           game.showGameOverScreen(true);
+          game.saveToDatabase();
         }
 
         if (!$('.frog').hasClass('animated')) {
@@ -184,6 +189,7 @@ var game = {
       $('.frog').addClass('animated bounceOutUp');
 
       setTimeout(function() {
+        game.saveToDatabase();
         if (game.level >= levels.length - 1) {
           game.win();
         } else {
@@ -543,6 +549,14 @@ var game = {
         });
       }
     });
+    $('#info-tutorial-code .info-tutorial-text').html(tutorial_text["info-tutorial-code"][game.language]);
+    $('#info-tutorial-badges .info-tutorial-text').html(tutorial_text["info-tutorial-badges"][game.language]);
+    $('#info-tutorial-time .info-tutorial-text').html(tutorial_text["info-tutorial-time"][game.language]);
+    $('#info-tutorial-lifes .info-tutorial-text').html(tutorial_text["info-tutorial-lifes"][game.language]);
+    $('#info-tutorial-nextlevel .info-tutorial-text').html(tutorial_text["info-tutorial-nextlevel"][game.language]);
+    $('#info-tutorial-check .info-tutorial-text').html(tutorial_text["info-tutorial-check"][game.language]);
+
+    game.setBadgeIndicators();
   },
 
   // apply styles to elements (level setup)
@@ -599,8 +613,11 @@ var game = {
       game.showCodeLine(false);
 
       game.saveToLocalStorage();
+      game.saveToDatabase();
 
       game.checkBadges();
+
+      game.setPoints();
 
       ga('send', {
         hitType: 'event',
@@ -654,11 +671,15 @@ var game = {
 
     const totalLevelPoints = timePoints() + livesPoints();
     game.points[level.name] = Math.floor(totalLevelPoints*10)/10;
-    $('#points').html(game.totalPoints())
   },
 
   totalPoints: function() {
-    return Object.values(game.points).reduce((a, b) => a + b, 0);
+    const pointsLevels = Object.values(game.points).reduce((a, b) => a + b, 0);
+    const pointsBronze = game.badges.filter(function (str) { return str.includes('bronze'); }).length * 500;
+    const pointsSilver = game.badges.filter(function (str) { return str.includes('silver'); }).length * 1000;
+    const pointsGold = game.badges.filter(function (str) { return str.includes('gold'); }).length * 2500;
+
+    return pointsLevels + pointsBronze + pointsSilver + pointsGold;
   },
 
   // save answer in array
@@ -705,20 +726,22 @@ var game = {
     $('.finish-points').html(this.totalPoints())
 
     game.showFinishScreen(true);
+  },
 
-    // save to database
-    // db.collection("games-sessions").add({
-    //   points: game.points,
-    //   remainingLives: game.remainingLives,
-    //   levelTimes: game.levelTimes,
-    //   pageTimes: game.pageTimes
-    // })
-    // .then((docRef) => {
-    //   console.log("Document written with ID: ", docRef.id);
-    // })
-    // .catch((error) => {
-    //     console.error("Error adding document: ", error);
-    // });
+  saveToDatabase: function() {
+    //save to database
+    db.collection("games-sessions").doc(game.user).set({
+      points: game.points,
+      remainingLives: game.remainingLives,
+      levelTimes: game.levelTimes,
+      pageTimes: game.pageTimes
+    })
+    .then((docRef) => {
+      console.log("Document written.");
+    })
+    .catch((error) => {
+        console.error("Error adding document: ", error);
+    });
   },
 
   transform: function() {
@@ -888,7 +911,7 @@ var game = {
   showIntroduction: function(show) {
     if(show) {
       game.loadHighscore();
-      $('#instructions-introduction').html(introduction_text.tutorial[game.language]);
+      $('#instructions-introduction').html(introduction_text.intro[game.language]);
       $('#sidebar-introduction').show();
       $('#sidebar').hide();
       $('#board-introduction').show();
@@ -969,18 +992,17 @@ var game = {
       for(let i = game.level-levelOffset; i > -1 && levels[i].lives == game.remainingLives[levels[i].name]; i--) {
         cnt++;
       }
-      console.log(cnt)
       game.badgesProgress['life-badge'] = cnt
 
-      if(cnt > 2 && !game.hasBadge('life-badge-gold')) {
+      if(cnt > 7 && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-gold');
         game.badges = game.badges.filter(e => e !== 'life-badge-silver');
         game.badgeAnimation('life-badge-gold');
-      } else if (cnt > 1 && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
+      } else if (cnt > 4 && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-silver');
         game.badges = game.badges.filter(e => e !== 'life-badge-bronze');
         game.badgeAnimation('life-badge-silver');
-      } else if (cnt > 0 && !game.hasBadge('life-badge-bronze') && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
+      } else if (cnt > 2 && !game.hasBadge('life-badge-bronze') && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-bronze');
         game.badgeAnimation('life-badge-bronze');
       }
@@ -1049,7 +1071,6 @@ var game = {
 
       game.badgesProgress['all-lessons-badge'] = game.solved.length
     }
-    console.log(game.badgesProgress)
     game.setBadges();
   },
 
@@ -1066,6 +1087,10 @@ var game = {
     game.badges.includes('points-badge-bronze') ? $('.points-badge .bg').addClass('bronze') : $('.points-badge .bg').removeClass('bronze');
     game.badges.includes('life-badge-bronze') ? $('.life-badge .bg').addClass('bronze') : $('.life-badge .bg').removeClass('bronze');
 
+    game.setBadgeIndicators();
+  },
+
+  setBadgeIndicators: function() {
     if(game.badges.includes('life-badge-gold')) {
       $('#info-life-badge-progress').hide();
       $('#info-life-badge-body').html(badges_info_text['life-badge-obtained'].body[game.language])
@@ -1098,7 +1123,7 @@ var game = {
       $('#info-time-badge-body').html(badges_info_text['time-badge-silver'].body[game.language])
     } else {
       $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['time-badge']/badges_info_text['time-badge-bronze'].divider*100}%"></div></div>`)
-      $('#info-time-badge-header').html(badges_info_text['time-badge-silver'].header[game.language])
+      $('#info-time-badge-header').html(badges_info_text['time-badge-bronze'].header[game.language])
       $('#info-time-badge-body').html(badges_info_text['time-badge-bronze'].body[game.language])
     }
 
@@ -1111,8 +1136,6 @@ var game = {
       $('#info-points-badge-header').html(badges_info_text['points-badge-gold'].header[game.language])
       $('#info-points-badge-body').html(badges_info_text['points-badge-gold'].body[game.language])
     } else if (game.badges.includes('points-badge-bronze')) {
-      console.log(game.badgesProgress)
-      console.log(badges_info_text['points-badge-silver'].divider)
       $('#info-points-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['points-badge']/badges_info_text['points-badge-silver'].divider*100}%"></div></div>`)
       $('#info-points-badge-header').html(badges_info_text['points-badge-silver'].header[game.language])
       $('#info-points-badge-body').html(badges_info_text['points-badge-silver'].body[game.language])
@@ -1159,6 +1182,9 @@ var game = {
   },
 
   resetGameStats: function() {
+    game.user += "_replay"
+    localStorage.setItem('user', game.user);
+
     game.level = 0;
     game.answers = {};
     game.solved = [];
@@ -1220,6 +1246,35 @@ var game = {
         }, 2000)
       }, 5000);
     }, 500)
+  },
+
+  makeTutorial: function() {
+    const popups = ['#info-tutorial-code', '#info-tutorial-check', '#info-tutorial-lifes', '#info-tutorial-nextlevel', '#info-tutorial-time', '#info-tutorial-badges'];
+    const elements = ['#code', '#check', '#lives-indicator', '#next', '#time-indicator', '#badges-indicator'];
+    let x = 0;
+
+    function tutorial() {
+      if(x == 0) {
+        window.scrollTo(0, 0);
+        $('#blur-screen').show();
+      }
+
+      if(x != 0) {
+        $(popups[x - 1]).removeClass('show-tutorial');
+        $(elements[x - 1]).removeClass('z-index-tutorial');
+      }
+
+      if(x > 5) {
+        $('#blur-screen').hide();
+        setTimeout(function() {
+          x = 0;
+        }, 2000);
+      }
+      $(popups[x]).addClass('show-tutorial');
+      $(elements[x]).addClass('z-index-tutorial');
+      x++;
+    };
+    return tutorial;
   }
 };
 
