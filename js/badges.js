@@ -1,8 +1,8 @@
 badges_info_text = {
     'life-badge-obtained': {
         'header': {
-            'de': '<strong>Leben Badge (Gold)</strong><br>',
-            'en': '<strong>Life Badge (Gold)</strong><br>'
+            'de': '<strong>Life Defender (Gold)</strong><br>',
+            'en': '<strong>Life Defender (Gold)</strong><br>'
         },
         'body' : {
             'de': 'Glückwunsch, du hast die Goldene Medaille erreicht.',
@@ -11,19 +11,19 @@ badges_info_text = {
     },
     'life-badge-gold': {
         'header': {
-            'de': '<strong>Leben Badge (Gold)</strong><br>',
-            'en': '<strong>Life Badge (Gold)</strong><br>'
+            'de': '<strong>Life Defender (Gold)</strong><br>',
+            'en': '<strong>Life Defender (Gold)</strong><br>'
         },
         'body' : {
             'de': 'Löse 7 Levels in folge, ohne ein Leben zu verlieren.',
             'en': 'Solve 7 levels in a row without losing a life.'
         },
-        'divider': 7
+        'divider': 8
     },
     'life-badge-silver': {
         'header': {
-            'de': '<strong>Leben Badge (Silber)</strong><br>',
-            'en': '<strong>Life Badge (Silver)</strong><br>'
+            'de': '<strong>Life Defender (Silber)</strong><br>',
+            'en': '<strong>Life Defender (Silver)</strong><br>'
         },
         'body' : {
             'de': 'Löse 5 Levels in folge, ohne ein Leben zu verlieren.',
@@ -33,8 +33,8 @@ badges_info_text = {
     },
     'life-badge-bronze': {
         'header': {
-            'de': '<strong>Leben Badge (Bronze)</strong><br>',
-            'en': '<strong>Life Badge (Bronze)</strong><br>'
+            'de': '<strong>Life Defender (Bronze)</strong><br>',
+            'en': '<strong>Life Defender (Bronze)</strong><br>'
         },
         'body' : {
             'de': 'Löse 3 Levels in folge, ohne ein Leben zu verlieren.',
@@ -44,8 +44,8 @@ badges_info_text = {
     },
     'points-badge-obtained': {
         'header': {
-            'de': '<strong>Punkte Badge (Gold)</strong><br>',
-            'en': '<strong>Points Badge (Gold)</strong><br>'
+            'de': '<strong>Points Collector (Gold)</strong><br>',
+            'en': '<strong>Points Collector (Gold)</strong><br>'
         },
         'body' : {
             'de': 'Glückwunsch, du hast die Goldene Medaille erreicht.',
@@ -54,41 +54,41 @@ badges_info_text = {
     },
     'points-badge-gold': {
         'header': {
-            'de': '<strong>Punkte Badge (Gold)</strong><br>',
-            'en': '<strong>Points Badge (Gold)</strong><br>'
+            'de': '<strong>Points Collector (Gold)</strong><br>',
+            'en': '<strong>Points Collector (Gold)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 7 Levels in folge mit maximaler Punktezahl.',
-            'en': 'Solve 7 levels in a row with maximum points.'
+            'de': 'Sammle 20.000 Punkte.',
+            'en': 'Collect 20.000 Points.'
         },
-        'divider': 7
+        'divider': 8
     },
     'points-badge-silver': {
         'header': {
-            'de': '<strong>Punkte Badge (Silber)</strong><br>',
-            'en': '<strong>Points Badge (Silver)</strong><br>'
+            'de': '<strong>Points Collector (Silber)</strong><br>',
+            'en': '<strong>Points Collector (Silver)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 5 Levels in folge mit maximaler Punktezahl.',
-            'en': 'Solve 5 levels in a row with maximum points.'
+            'de': 'Sammle 15.000 Punkte.',
+            'en': 'Collect 15.000 Points.'
         },
         'divider': 5
     },
     'points-badge-bronze': {
         'header': {
-            'de': '<strong>Punkte Badge (Bronze)</strong><br>',
-            'en': '<strong>Points Badge (Bronze)</strong><br>'
+            'de': '<strong>Points Collector (Bronze)</strong><br>',
+            'en': '<strong>Points Collector (Bronze)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 3 Levels in folge mit maximaler Punktezahl.',
-            'en': 'Solve 3 levels in a row with maximum points.'
+            'de': 'Sammle 8.000 Punkte.',
+            'en': 'Collect 8.000 Points.'
         },
         'divider': 3
     },
     'time-badge-obtained': {
         'header': {
-            'de': '<strong>Zeit Badge (Gold)</strong><br>',
-            'en': '<strong>Time Badge (Gold)</strong><br>'
+            'de': '<strong>Time Keeper (Gold)</strong><br>',
+            'en': '<strong>Time Keeper (Gold)</strong><br>'
         },
         'body' : {
             'de': 'Glückwunsch, du hast die Goldene Medaille erreicht.',
@@ -97,19 +97,19 @@ badges_info_text = {
     },
     'time-badge-gold': {
         'header': {
-            'de': '<strong>Zeit Badge (Gold)</strong><br>',
-            'en': '<strong>Time Badge (Gold)</strong><br>'
+            'de': '<strong>Time Keeper (Gold)</strong><br>',
+            'en': '<strong>Time Keeper (Gold)</strong><br>'
         },
         'body' : {
             'de': 'Löse 7 Levels in folge in weniger als 30 Sekunden.',
             'en': 'Solve 7 levels in a row in less than 30 seconds.'
         },
-        'divider': 7
+        'divider': 8
     },
     'time-badge-silver': {
         'header': {
-            'de': '<strong>Zeit Badge (Silber)</strong><br>',
-            'en': '<strong>Time Badge (Silver)</strong><br>'
+            'de': '<strong>Time Keeper (Silber)</strong><br>',
+            'en': '<strong>Time Keeper (Silver)</strong><br>'
         },
         'body' : {
             'de': 'Löse 5 Levels in folge in weniger als 30 Sekunden.',
@@ -119,8 +119,8 @@ badges_info_text = {
     },
     'time-badge-bronze': {
         'header': {
-            'de': '<strong>Zeit Badge (Bronze)</strong><br>',
-            'en': '<strong>Time Badge (Bronze)</strong><br>'
+            'de': '<strong>Time Keeper (Bronze)</strong><br>',
+            'en': '<strong>Time Keeper (Bronze)</strong><br>'
         },
         'body' : {
             'de': 'Löse 3 Levels in folge in weniger als 30 Sekunden.',
@@ -130,8 +130,8 @@ badges_info_text = {
     },
     'all-lessons-badge-obtained': {
         'header': {
-            'de': '<strong>Übungs Badge (Gold)</strong><br>',
-            'en': '<strong>Lesson Badge (Gold)</strong><br>'
+            'de': '<strong>Hungry Learner</strong><br>',
+            'en': '<strong>Hungry Learner</strong><br>'
         },
         'body' : {
             'de': 'Glückwunsch, du hast die Goldene Medaille erreicht.',
@@ -140,8 +140,8 @@ badges_info_text = {
     },
     'all-lessons-badge-gold': {
         'header': {
-            'de': '<strong>Übungs Badge</strong><br>',
-            'en': '<strong>Lesson Badge</strong><br>'
+            'de': '<strong>Hungry Learner</strong><br>',
+            'en': '<strong>Hungry Learner</strong><br>'
         },
         'body' : {
             'de': 'Löse alle Levels mit neuen Flexbox-Befehlen.',
@@ -151,8 +151,8 @@ badges_info_text = {
     },
     'complete-badge-obtained': {
         'header': {
-            'de': '<strong>Spiel Komplett Badge (Gold)</strong><br>',
-            'en': '<strong>Complete Badge (Gold)</strong><br>'
+            'de': '<strong>Froggy Master</strong><br>',
+            'en': '<strong>Froggy Master</strong><br>'
         },
         'body' : {
             'de': 'Glückwunsch, du hast die Goldene Medaille erreicht.',
@@ -161,8 +161,8 @@ badges_info_text = {
     },
     'complete-badge-gold': {
         'header': {
-            'de': '<strong>Spiel Komplett Badge</strong><br>',
-            'en': '<strong>Complete Badge</strong><br>'
+            'de': '<strong>Froggy Master</strong><br>',
+            'en': '<strong>Froggy Master</strong><br>'
         },
         'body' : {
             'de': 'Löse alle Levels.',

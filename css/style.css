@@ -173,7 +173,7 @@ body {
 }
 
 .time-badge .bg.silver {
-  background-image: url("../images/time-badge-gold-silver.png");
+  background-image: url("../images/time-badge-silver.png");
 }
 
 .time-badge .bg.bronze {
@@ -483,7 +483,6 @@ pre {
   flex-direction: row;
   gap: 0.2em;
   height: 45px;
-  cursor: pointer;
 }
 
 #finish-stats {
@@ -529,6 +528,9 @@ pre {
   width: 100%;
   line-height: 30px;
   text-align: center;
+}
+
+#level-indicator {
   cursor: pointer;
 }
 
@@ -1304,13 +1306,13 @@ tr:last-child td:last-child { border-bottom-right-radius: 10px; }
 }
 
 #info-tutorial-badges {
-  left: 313px;
-  bottom: 241px;
+  left: 61px;
+  top: 0px;
 }
 
 #info-tutorial-time {
-  left: 344px;
-  bottom: 153px;
+  left: 67px;
+  top: 33px;
 }
 
 #info-tutorial-lifes {

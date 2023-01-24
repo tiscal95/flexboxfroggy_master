@@ -45,7 +45,7 @@
         <tbody class="highscore-data">
         </tbody>
       </table>
-      <button id="startGame" class="translate" style="display: block; margin: 1em auto;">Start Game</button>
+      <button id="startGame" class="translate" style="display: block; margin: 1em auto;"></button>
     </section>
 
     <section id="sidebar-finish" style="display: none">
@@ -184,10 +184,6 @@
               </div>
             </div>
           </div>
-          <div id="info-tutorial-badges" class="tooltip">
-            <span class="info-tutorial-text"></span>
-            <span class="info-tutorial-next"><button id="nextTutorial1" class="tutorial-next translate"></button></span>
-          </div>
         </div>
         <div id="stats-row-2">
           <div id="level-counter">
@@ -207,6 +203,14 @@
             </span>
           </div>
           <div id="time-counter">
+            <div id="info-tutorial-time" class="tooltip">
+              <span class="info-tutorial-text"></span>
+              <span class="info-tutorial-next"><button id="nextTutorial2" class="tutorial-next translate"></button></span>
+            </div>
+            <div id="info-tutorial-badges" class="tooltip">
+              <span class="info-tutorial-text"></span>
+              <span class="info-tutorial-next"><button id="nextTutorial1" class="tutorial-next translate"></button></span>
+            </div>
             <span id="time-indicator">
               <span>
                 <span id="minutes">00</span> :
@@ -214,10 +218,6 @@
                 <span id="milisecond">00</span>
               </span>
             </span>
-          </div>
-          <div id="info-tutorial-time" class="tooltip">
-            <span class="info-tutorial-text"></span>
-            <span class="info-tutorial-next"><button id="nextTutorial2" class="tutorial-next translate"></button></span>
           </div>
         </div>
       </div>
@@ -314,6 +314,20 @@
                   </div>
               </form>
             </section>
+            <section>
+              <h4 id="labelSound" class="translate">Sound</h4>
+              <form id="sound">
+                <div>
+                  <div>
+                    <input type="radio" name="sound" id="soundOff" value="false">
+                    <label id="labelSoundOff" for="soundOff" class="translate">Off</label>
+                  </div>
+                  <div>
+                    <input type="radio" name="sound" id="soundOn" value="true" checked>
+                    <label id="labelSoundOn" for="soundOn" class="translate">On</label>
+                  </div>
+              </form>
+            </section>
           </span>
         </span>
       </div>
@@ -332,6 +346,7 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <script src="node_modules/jquery/dist/jquery.min.js"></script>
     <script src="js/levels.js"></script>
+    <script src="js/sounds.js"></script>
     <script src="js/docs.js"></script>
     <script src="js/badges.js"></script>
     <script src="js/introduction.js"></script>
