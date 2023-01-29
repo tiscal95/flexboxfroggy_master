@@ -25,7 +25,9 @@ var game = {
   points: (localStorage.points && JSON.parse(localStorage.points)) || {},
   badges: (localStorage.badges && JSON.parse(localStorage.badges)) || [],
   badgesProgress: {},
-  gameFinish: (localStorage.gameFinish && JSON.parse(localStorage.gameFinish)) || 'false',
+  gameWin: (localStorage.gameWin && JSON.parse(localStorage.gameWin)) || 'false',
+  gameQuit: (localStorage.gameQuit && JSON.parse(localStorage.gameQuit)) || 'false',
+  tutorialFinish: (localStorage.tutorialFinish && JSON.parse(localStorage.tutorialFinish)) || 'false',
   nameSubmit: (localStorage.nameSubmit && JSON.parse(localStorage.nameSubmit)) || 'false',
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
@@ -57,7 +59,6 @@ var game = {
     $('input[value="' + game.colorblind + '"]', '#colorblind').prop('checked', true);
     $('input[value="' + game.sound + '"]', '#sound').prop('checked', true);
 
-    console.log(game.sound)
     if(game.sound == 'true') {
       sounds.shake.volume = 0.5;
       sounds.correct.volume = 0.5;
@@ -66,7 +67,6 @@ var game = {
       sounds.background.volume = 0.5;
       sounds.badge.volume = 0.5;
     } else {
-      console.log('false sound')
       sounds.shake.volume = 0;
       sounds.correct.volume = 0;
       sounds.start.volume = 0;
@@ -79,16 +79,28 @@ var game = {
     this.loadMenu();
 
     if (!localStorage.user) {
-      game.user = '' + (new Date()).getTime() + Math.random().toString(36).slice(1);
+      game.user = '' + (new Date()).toISOString();
       localStorage.setItem('user', game.user);
       game.loadHighscore();
-    } else {
-      game.showIntroduction(false)
     }
 
-    if (game.gameFinish == 'true') {
-      game.win();
-      game.showFinishScreen(true);
+    if (this.tutorialFinish == 'false') {
+      game.showIntroduction(true);
+    } else {
+      game.showIntroduction(false);
+    }
+
+    if (game.gameWin == 'true') {
+      game.gameFinish(true);
+      if (game.nameSubmit == 'true') {
+        $('#highscore-form').hide();
+        game.loadHighscoreFinish();
+      }
+      return;
+    }
+
+    if (game.gameQuit == 'true') {
+      game.gameFinish();
       if (game.nameSubmit == 'true') {
         $('#highscore-form').hide();
         game.loadHighscoreFinish();
@@ -139,47 +151,32 @@ var game = {
       tutorial();
     });
 
+    $('#end').on('click', function() {
+      game.gameFinish();
+    });
+
+    $('#nextTutorial6').on('click', function() {
+      game.tutorialFinish = 'true';
+    });
+
     $('.tutorial-next').on('click', function() {
       tutorial();
     });
 
     $('#start').on('click', function() {
-      sounds.background.loop = true;
-      sounds.background.play();
-      sounds.start.play();
-      game.levelStartTimer();
-      game.disableButtons(true, false, false);
-      game.showStartScreen(false);
-      game.showCodeLine(true);
-      $('#code').focus();
+      game.startGame();
     });
 
     $('#pause').on('click', function() {
-      game.levelEndTimer();
-      game.showPauseScreen(true);
-      game.disableButtons(true, true, true);
-      game.showCodeLine(false);
+      game.pauseGame();
     });
 
     $('#resume').on('click', function() {
-      sounds.background.loop = true;
-      sounds.background.play();
-      sounds.start.play();
-      game.levelStartTimer();
-      game.showPauseScreen(false);
-      game.disableButtons(true, false, false);
-      game.showCodeLine(true);
-      $('#code').focus();
+      game.resumeGame();
     });
 
     $('.retry').on('click', function() {
-      game.showFinishScreen(false);
-      game.showGameOverScreen(false);
-      game.resetGameStats();
-      game.loadLevel(levels[0])
-      game.showCodeLine(false);
-      sounds.background.currentTime = 0;
-      sounds.background.play();
+      game.replayGame();
     })
 
     $('#check').on('click', function() {
@@ -226,7 +223,7 @@ var game = {
       setTimeout(function() {
         game.saveToDatabase();
         if (game.level >= levels.length - 1) {
-          game.win();
+          game.gameFinish(true);
         } else {
           game.levelMiliseconds = null;
           game.next();
@@ -241,7 +238,7 @@ var game = {
         if(game.lives == 0) {
           return;
         }
-        if ((e.ctrlKey || e.metaKey) && game.levelMiliseconds != level.maxTime*1000) {
+        if ((e.ctrlKey || e.metaKey) && game.levelMiliseconds != level.maxTime) {
           e.preventDefault();
           game.check();
           $('#next').click();
@@ -255,7 +252,7 @@ var game = {
         var trimLength = trim.split('\n').length;
 
         if (codeLength >= max) {
-          if (codeLength === trimLength && game.levelMiliseconds != level.maxTime*1000) {
+          if (codeLength === trimLength && game.levelMiliseconds != level.maxTime) {
             e.preventDefault();
             $('#check').click();
           } else {
@@ -283,6 +280,10 @@ var game = {
         game.levelEndTimer();
 
         game.resetGameStats();
+        $('#finish-screen-1').show();
+        $('#finish-screen-2').hide();
+        $('#highscore-name-input').attr('disabled', false);
+        $('#highscore-form-submit').attr('disabled', false);
 
         game.showIntroduction(true);
 
@@ -403,6 +404,52 @@ var game = {
     });
   },
 
+  startGame: function() {
+    sounds.background.loop = true;
+    sounds.background.play();
+    sounds.start.play();
+    game.levelStartTimer();
+    game.disableButtons(true, false, false);
+    game.showStartScreen(false);
+    game.showCodeLine(true);
+    $('#code').focus();
+  },
+
+  pauseGame: function() {
+    game.levelEndTimer();
+    game.showPauseScreen(true);
+    game.disableButtons(true, true, true);
+    game.showCodeLine(false);
+  },
+
+  resumeGame: function() {
+    sounds.background.loop = true;
+    sounds.background.play();
+    sounds.start.play();
+    game.levelStartTimer();
+    game.showPauseScreen(false);
+    game.showStartScreen(false);
+    game.disableButtons(true, false, false);
+    game.showCodeLine(true);
+    $('#code').focus();
+  },
+
+  replayGame: function() {
+    game.showFinishScreen(false);
+    game.showGameOverScreen(false);
+    game.resetGameStats();
+    game.loadLevel(levels[0])
+    game.showCodeLine(false);
+    $('#finish-screen-1').show();
+    $('#finish-screen-2').hide();
+    $('#highscore-name-input').attr('disabled', false);
+    $('#highscore-form-submit').attr('disabled', false);
+    $('.level-marker').removeClass('solved');
+    game.checkBadges();
+    sounds.background.currentTime = 0;
+    sounds.background.play();
+  },
+
   // navigate to previous level
   prev: function() {
     this.level--;
@@ -471,7 +518,6 @@ var game = {
 
   // load and set up level
   loadLevel: function(level) {
-    $('#share').hide();
     this.setTimers();
     this.setLives();
     this.setPoints();
@@ -486,14 +532,8 @@ var game = {
       game.showStartScreen(false);
       game.showPauseScreen(false);
       game.disableButtons(true, false, true)
-    } else if(game.levelMiliseconds == 0) {
-      game.showStartScreen(false);
-      game.showPauseScreen(false);
-      game.disableButtons(true, false, true)
-    } else if(game.levelMiliseconds < level.maxTime * 1000) {
-      game.showStartScreen(false);
-      game.showPauseScreen(true);
-      game.disableButtons(true, false, true) 
+    } else if(game.levelMiliseconds < level.maxTime) {
+      game.resumeGame();
     } else {
       game.showStartScreen(true);
       game.showPauseScreen(false);
@@ -513,6 +553,14 @@ var game = {
     var lines = Object.keys(level.style).length;
     $('#code').height(20 * lines).data("lines", lines);
 
+    this.setUpBoard(level);
+
+    game.changed = false;
+    game.applyStyles();
+    !game.levelSolved() && game.check();
+  },
+
+  setUpBoard: function(level) {
     var string = level.board;
     var markup = '';
     var colors = {
@@ -534,23 +582,19 @@ var game = {
 
       $('#background').append(lilypad);
       $('#pond').append(frog);
-    }
 
-    // add classes for levels
-    var classes = level.classes;
+      // add classes for levels
+      var classes = level.classes;
 
-    if (classes) {
-      for (var rule in classes) {
+      if (classes) {
+        for (var rule in classes) {
         $(rule).addClass(classes[rule]);
       }
     }
 
     var selector = level.selector || '';
     $('#background ' + selector).css(level.style);
-
-    game.changed = false;
-    game.applyStyles();
-    !game.levelSolved() && game.check();
+    }
   },
 
   loadDocs: function() {
@@ -701,14 +745,14 @@ var game = {
     let pointsTemp = level.maxPoints;
     const timePoints = function() {
       let timePointsTemp = pointsTemp/2;
-      let remainingTimeSeconds = game.levelMiliseconds/ 1000;
-      if(remainingTimeSeconds > level.maxTimeIntervals[0]) {
+      let remainingTime = game.levelMiliseconds;
+      if(remainingTime > level.maxTimeIntervals[0]) {
         return timePointsTemp
-      } else if (remainingTimeSeconds > level.maxTimeIntervals[1]) {
+      } else if (remainingTime > level.maxTimeIntervals[1]) {
         return timePointsTemp*0.8;
-      } else if (remainingTimeSeconds > level.maxTimeIntervals[2]) {
+      } else if (remainingTime > level.maxTimeIntervals[2]) {
         return timePointsTemp*0.6;
-      } else if (remainingTimeSeconds > level.maxTimeIntervals[3]) {
+      } else if (remainingTime > level.maxTimeIntervals[3]) {
         return timePointsTemp*0.4;
       } else {
         return timePointsTemp*0.2;
@@ -764,20 +808,29 @@ var game = {
   },
 
   // when all game levels solved
-  win: function() {
-    game.gameFinish = 'true';
-    var solution = $('#code').val();
+  gameFinish: function(win = false) {
+    if(win) {
+      console.log('executed 1')
+      game.gameWin = 'true';
+    } else {
+      console.log('executed 2')
+      game.gameQuit = 'true';
+    }
 
-    this.loadLevel(levelWin);
-
-    $('#editor').hide();
-    $('#code').val(solution);
-    $('#share').show();
+    this.setUpBoard(levelWin);
     $('.frog .bg').removeClass('pulse').addClass('bounce');
-
     $('.finish-points').html(this.totalPoints())
 
-    game.showFinishScreen(true);
+    if(game.gameWin == 'true') {
+      console.log('executed 3')
+      game.showFinishScreen(true);
+    }
+
+    if(game.gameQuit == 'true') {
+      console.log('executed 4')
+      game.showQuitScreen(true);
+    }
+   
   },
 
   saveToDatabase: function() {
@@ -887,13 +940,13 @@ var game = {
   setTimeIndicator: function(timeElapsed) {
     //color
     const level = levels[game.level]
-    if(timeElapsed > level.maxTimeIntervals[0]*1000) {
+    if(timeElapsed > level.maxTimeIntervals[0]) {
       $('#time-indicator').attr('style', 'background-color: rgba(255, 255, 255, 0.2);');
-    } else if(timeElapsed > level.maxTimeIntervals[1]*1000) {
+    } else if(timeElapsed > level.maxTimeIntervals[1]) {
       $('#time-indicator').attr('style', 'background-color: rgba(246, 255, 0, 0.2);');
-    } else if (timeElapsed > level.maxTimeIntervals[2]*1000) {
+    } else if (timeElapsed > level.maxTimeIntervals[2]) {
       $('#time-indicator').attr('style', 'background-color: rgba(255, 81, 0, 0.4);');
-    } else if (timeElapsed > level.maxTimeIntervals[3]*1000) {
+    } else if (timeElapsed > level.maxTimeIntervals[3]) {
       $('#time-indicator').attr('style', 'background-color: rgba(255, 0, 0, 0.6);');
     }
 
@@ -924,7 +977,7 @@ var game = {
       game.levelMiliseconds = game.levelTimes[level.name];
       this.setTimeIndicator(game.levelMiliseconds);
     } else {
-      game.levelMiliseconds = level.maxTime * 1000;
+      game.levelMiliseconds = level.maxTime;
       this.setTimeIndicator(game.levelMiliseconds);
     };
   },
@@ -993,6 +1046,21 @@ var game = {
       $('#highscore-name-input').attr('placeholder', finish_text.placeholder[game.language])
       $('#highscore-form-submit').html(finish_text.button[game.language])
       $('#finish-text').html(finish_text.game_complete[game.language]);
+      $('#sidebar-finish').show();
+      $('#sidebar').hide();
+    } else {
+      $('#sidebar-finish').hide();
+      $('#sidebar').show();
+    }
+  },
+
+  showQuitScreen: function(show) {
+    console.log('executed')
+    console.log(this.showQuitScreen.caller)
+    if(show) {
+      $('#highscore-name-input').attr('placeholder', finish_text.placeholder[game.language])
+      $('#highscore-form-submit').html(finish_text.button[game.language])
+      $('#finish-text').html(finish_text.game_quit[game.language]);
       $('#sidebar-finish').show();
       $('#sidebar').hide();
     } else {
@@ -1090,7 +1158,7 @@ var game = {
     if(!game.badges.includes('time-badge-gold') || !game.badges.includes('time-badge-silver') || !game.badges.includes('time-badge-bronze')) {
       let cnt = 0;
       
-      for(let i = game.level-levelOffset; i > -1 && game.levelTimes[levels[i].name] > (levels[i].maxTimeIntervals[0] * 1000); i--) {
+      for(let i = game.level-levelOffset; i > -1 && game.levelTimes[levels[i].name] > (levels[i].maxTimeIntervals[0]); i--) {
         cnt++;
       }
 
@@ -1103,7 +1171,6 @@ var game = {
         game.badges = game.badges.filter(e => e !== 'time-badge-bronze');
         game.badgeAnimation('time-badge-silver');
       } else if (cnt > 2 && !game.hasBadge('time-badge-bronze') && !game.hasBadge('time-badge-silver') && !game.hasBadge('time-badge-gold')) {
-        console.log('time bronze')
         game.badges.push('time-badge-bronze');
         game.badgeAnimation('time-badge-bronze');
       }
@@ -1153,14 +1220,17 @@ var game = {
       $('#info-life-badge-body').html(badges_info_text['life-badge-obtained'].body[game.language])
       $('#info-life-badge-header').html(badges_info_text['life-badge-obtained'].header[game.language])
     } else if(game.badges.includes('life-badge-silver')) {
+      $('#info-life-badge-progress').show();
       $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['life-badge']/badges_info_text['life-badge-gold'].divider*100}%"></div></div>`)
       $('#info-life-badge-body').html(badges_info_text['life-badge-gold'].body[game.language])
       $('#info-life-badge-header').html(badges_info_text['life-badge-gold'].header[game.language])
     } else if (game.badges.includes('life-badge-bronze')) {
+      $('#info-life-badge-progress').show();
       $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['life-badge']/badges_info_text['life-badge-silver'].divider*100}%"></div></div>`)
       $('#info-life-badge-body').html(badges_info_text['life-badge-silver'].body[game.language])
       $('#info-life-badge-header').html(badges_info_text['life-badge-silver'].header[game.language])
     } else {
+      $('#info-life-badge-progress').show();
       $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['life-badge']/badges_info_text['life-badge-bronze'].divider*100}%"></div></div>`)
       $('#info-life-badge-body').html(badges_info_text['life-badge-bronze'].body[game.language])
       $('#info-life-badge-header').html(badges_info_text['life-badge-bronze'].header[game.language])
@@ -1171,14 +1241,17 @@ var game = {
       $('#info-time-badge-body').html(badges_info_text['time-badge-obtained'].body[game.language])
       $('#info-time-badge-header').html(badges_info_text['time-badge-obtained'].header[game.language])
     } else if(game.badges.includes('time-badge-silver')) {
+      $('#info-time-badge-progress').show();
       $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['time-badge']/badges_info_text['time-badge-gold'].divider*100}%"></div></div>`)
       $('#info-time-badge-header').html(badges_info_text['time-badge-gold'].header[game.language])
       $('#info-time-badge-body').html(badges_info_text['time-badge-gold'].body[game.language])
     } else if (game.badges.includes('time-badge-bronze')) {
+      $('#info-time-badge-progress').show();
       $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['time-badge']/badges_info_text['time-badge-silver'].divider*100}%"></div></div>`)
       $('#info-time-badge-header').html(badges_info_text['time-badge-silver'].header[game.language])
       $('#info-time-badge-body').html(badges_info_text['time-badge-silver'].body[game.language])
     } else {
+      $('#info-time-badge-progress').show();
       $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['time-badge']/badges_info_text['time-badge-bronze'].divider*100}%"></div></div>`)
       $('#info-time-badge-header').html(badges_info_text['time-badge-bronze'].header[game.language])
       $('#info-time-badge-body').html(badges_info_text['time-badge-bronze'].body[game.language])
@@ -1189,14 +1262,17 @@ var game = {
       $('#info-points-badge-body').html(badges_info_text['points-badge-obtained'].body[game.language])
       $('#info-points-badge-header').html(badges_info_text['points-badge-obtained'].header[game.language])
     } else if(game.badges.includes('points-badge-silver')) {
+      $('#info-points-badge-progress').show();
       $('#info-points-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.totalPoints()/21999.9*100}%"></div></div>`)
       $('#info-points-badge-header').html(badges_info_text['points-badge-gold'].header[game.language])
       $('#info-points-badge-body').html(badges_info_text['points-badge-gold'].body[game.language])
     } else if (game.badges.includes('points-badge-bronze')) {
+      $('#info-points-badge-progress').show();
       $('#info-points-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.totalPoints()/14999.9*100}%"></div></div>`)
       $('#info-points-badge-header').html(badges_info_text['points-badge-silver'].header[game.language])
       $('#info-points-badge-body').html(badges_info_text['points-badge-silver'].body[game.language])
     } else {
+      $('#info-points-badge-progress').show();
       $('#info-points-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.totalPoints()/7999.9*100}%"></div></div>`)
       $('#info-points-badge-header').html(badges_info_text['points-badge-bronze'].header[game.language])
       $('#info-points-badge-body').html(badges_info_text['points-badge-bronze'].body[game.language])
@@ -1207,6 +1283,7 @@ var game = {
       $('#info-all-lessons-badge-body').html(badges_info_text['all-lessons-badge-obtained'].body[game.language])
       $('#info-all-lessons-badge-header').html(badges_info_text['all-lessons-badge-obtained'].header[game.language])
     } else {
+      $('#info-all-lessons-badge-progress').show();
       $('#info-all-lessons-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['all-lessons-badge']/badges_info_text['all-lessons-badge-gold'].divider*100}%"></div></div>`)
       $('#info-all-lessons-badge-header').html(badges_info_text['all-lessons-badge-gold'].header[game.language])
       $('#info-all-lessons-badge-body').html(badges_info_text['all-lessons-badge-gold'].body[game.language])
@@ -1217,6 +1294,7 @@ var game = {
       $('#info-complete-badge-body').html(badges_info_text['complete-badge-obtained'].body[game.language])
       $('#info-complete-badge-header').html(badges_info_text['complete-badge-obtained'].header[game.language])
     } else {
+      $('#info-complete-badge-progress').show();
       $('#info-complete-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['complete-badge']/badges_info_text['complete-badge-gold'].divider*100}%"></div></div>`)
       $('#info-complete-badge-header').html(badges_info_text['complete-badge-gold'].header[game.language])
       $('#info-complete-badge-body').html(badges_info_text['complete-badge-gold'].body[game.language])
@@ -1231,7 +1309,9 @@ var game = {
     localStorage.setItem('sound', JSON.stringify(game.sound));
     // additional
     localStorage.setItem('points', JSON.stringify(game.points));
-    localStorage.setItem('gameFinish', JSON.stringify(game.gameFinish));
+    localStorage.setItem('gameWin', JSON.stringify(game.gameWin));
+    localStorage.setItem('gameQuit', JSON.stringify(game.gameQuit));
+    localStorage.setItem('tutorialFinish', JSON.stringify(game.tutorialFinish));
     localStorage.setItem('nameSubmit', JSON.stringify(game.nameSubmit));
     localStorage.setItem('badges', JSON.stringify(game.badges));
     localStorage.setItem('remainingLives', JSON.stringify(game.remainingLives));
@@ -1256,8 +1336,10 @@ var game = {
     game.remainingLives = {};
     game.badges = [];
     game.points = {};
-    game.gameFinish = 'false';
+    game.gameWin = 'false';
+    game.gameQuit = 'false';
     game.nameSubmit = 'false';
+    game.tutorialFinish = 'false';
   },
 
   loadHighscoreFinish: function() {

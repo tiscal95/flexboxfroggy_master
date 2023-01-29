@@ -35,8 +35,12 @@ var tutorial_text = {
 
 var finish_text = {
     'game_complete': {
-        'en': '<p>You win! Thanks to your mastery of flexbox, you were able to help all of the frogs to their lilypads. Just look how hoppy they are!</p><p>If you found this ribbeting, be sure to visit <a href="https://codepip.com/games/grid-garden/">Grid Garden</a> to learn about another powerful new feature of CSS layout. You can also find other coding games over at <a href="https://codepip.com/">Codepip</a>. And be sure to share Flexbox Froggy with your friends!</p>',
-        'de': '<p>Gewonnen! Dank deines flexbox-Könnens warst du in der Lage, alle Frösche zu ihrem Seerosenblatt zu führen. Sieh dir an, wie glücklich sie sind!</p><p>Wenn dir das gefallen hat, schau dir meine anderen Projekte auf meinem <a href="https://thomaspark.co">Blog</a> oder <a href="https://twitter.com/thomashpark">Twitter</a> an und teile Flexbox Froggy mit deinen Freunden!</p>',
+        'en': '<p>You win! Thanks to your mastery of flexbox, you were able to help all of the frogs to get to their lilypads. <br>Just look how happy they are! :D</p>',
+        'de': '<p>Gewonnen! Dank deines Flexbox-Könnens warst du in der Lage, alle Frösche zu ihrem Seerosenblatt zu führen. <br>Sieh dir an, wie glücklich sie sind! :D</p>',
+    },
+    'game_quit': {
+        'en': '<p>Oh, why quit so fast! I am sure you could have made it. Now Froggy and his friends might never find their ways to the lilypads :(</p>',
+        'de': '<p>Oh, warum wirfst du so früh das Handtuch? Jetzt werden Froggy und seine Freunde vielleicht nie den Weg zu den Rosenblättern finden :(</p>',
     },
     'placeholder': {
         'en': 'Enter your name',

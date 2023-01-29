@@ -250,6 +250,19 @@ code {
   white-space: nowrap;
 }
 
+div.tooltip code {
+  pointer-events: none;
+}
+
+#end {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 3px;
+  color: rgba(255, 255, 255, 0.8);
+  cursor: pointer;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
 li {
   line-height: 1.5;
 }
