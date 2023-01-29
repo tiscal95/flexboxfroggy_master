@@ -31,7 +31,10 @@ var game = {
   gameWin: (localStorage.gameWin && JSON.parse(localStorage.gameWin)) || 'false',
   gameQuit: (localStorage.gameQuit && JSON.parse(localStorage.gameQuit)) || 'false',
   tutorialFinish: (localStorage.tutorialFinish && JSON.parse(localStorage.tutorialFinish)) || 'false',
+  nickname: (localStorage.nickname && JSON.parse(localStorage.nickname)) || '',
   nameSubmit: (localStorage.nameSubmit && JSON.parse(localStorage.nameSubmit)) || 'false',
+  badgeTime: parseInt(localStorage.badgeTime, 10) || 0,
+  badgeLives: parseInt(localStorage.badgeLives, 10) || 0,
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
   sound: (localStorage.sound && JSON.parse(localStorage.sound)) || 'true',
@@ -128,6 +131,7 @@ var game = {
       $('#highscore-name-input').attr('disabled', true);
       $('#highscore-form-submit').attr('disabled', true);
       $('#player-name').html($('#highscore-name-input')[0].value);
+      game.nickname = $('#highscore-name-input')[0].value;
       game.nameSubmit = 'true';
 
       db.collection("highscore").add({
@@ -155,6 +159,7 @@ var game = {
     });
 
     $('#end').on('click', function() {
+      const level = levels[game.level]
       game.gameFinish();
       game.levelEndTimer();
       game.pageEndTimes[level.name] = new Date();
@@ -188,13 +193,29 @@ var game = {
 
     $('#check').on('click', function() {
       game.check();
+      const level = levels[game.level];
+      if ($('#check').hasClass('disabled')) {
+        console.log('here')
+        if (level.lives == game.lives) {
+          game.badgeLives++;
+        } else {
+          game.badgeLives = 0;
+        }
+  
+        if (game.levelMiliseconds > (level.maxTimeIntervals[0])) {
+          game.badgeTime++;
+        } else {
+          game.badgeTime = 0;
+        }
+        game.checkBadges();
+      }
+
       if ($('#next').hasClass('disabled')) {
         sounds.shake.play();
         game.lives--;
         game.saveLives();
         game.printLives();
         if(game.lives == 0) {
-          const level = levels[game.level];
           game.levelEndTimer();
           game.levelEndTimes[level.name] = new Date();
           game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
@@ -297,6 +318,7 @@ var game = {
         $('#finish-screen-2').hide();
         $('#highscore-name-input').attr('disabled', false);
         $('#highscore-form-submit').attr('disabled', false);
+        $('#highscore-form').hide();
 
         game.showIntroduction(true);
 
@@ -458,6 +480,7 @@ var game = {
     $('#highscore-name-input').attr('disabled', false);
     $('#highscore-form-submit').attr('disabled', false);
     $('.level-marker').removeClass('solved');
+    $('#highscore-form').show();
     game.checkBadges();
     sounds.background.currentTime = 0;
     sounds.background.play();
@@ -536,8 +559,8 @@ var game = {
     this.setPoints();
     this.setGameScreen();
     this.setCodeBox();
-    this.checkBadges(1);    
     this.setLevelIndicator();
+    game.setBadgeIndicators();
     game.showCodeLine(false);
 
     if(game.lives == 0) {
@@ -717,7 +740,6 @@ var game = {
       game.levelEndTimer();
       game.levelEndTimes[level.name] = new Date();
       game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
-
       game.solved.push(level.name);
       game.savePoints();
       game.saveLives();        
@@ -727,9 +749,6 @@ var game = {
 
       game.saveToLocalStorage();
       game.saveToDatabase();
-
-      game.checkBadges();
-
       game.setPoints();
 
       ga('send', {
@@ -834,7 +853,9 @@ var game = {
 
     this.setUpBoard(levelWin);
     $('.frog .bg').removeClass('pulse').addClass('bounce');
-    $('.finish-points').html(this.totalPoints())
+    $('.finish-points').html(this.totalPoints());
+    $('#player-name').html(game.nickname);
+    game.setBadges();
 
     if(game.gameWin == 'true') {
       game.showFinishScreen(true);
@@ -1132,25 +1153,18 @@ var game = {
     return game.badges.includes(badge);
   },
 
-  checkBadges: function(levelOffset = 0) {
+  checkBadges: function() {
     const level = levels[game.level]
     if(!game.hasBadge('life-badge-gold') || !game.hasBadge('life-badge-silver') || !game.hasBadge('life-badge-bronze')) {
-      let cnt = 0;
-      
-      for(let i = game.level-levelOffset; i > -1 && levels[i].lives == game.remainingLives[levels[i].name]; i--) {
-        cnt++;
-      }
-      game.badgesProgress['life-badge'] = cnt
-
-      if(cnt > 7 && !game.hasBadge('life-badge-gold')) {
+      if(game.badgeLives > 7 && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-gold');
         game.badges = game.badges.filter(e => e !== 'life-badge-silver');
         game.badgeAnimation('life-badge-gold');
-      } else if (cnt > 4 && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
+      } else if (game.badgeLives > 4 && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-silver');
         game.badges = game.badges.filter(e => e !== 'life-badge-bronze');
         game.badgeAnimation('life-badge-silver');
-      } else if (cnt > 2 && !game.hasBadge('life-badge-bronze') && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
+      } else if (game.badgeLives > 2 && !game.hasBadge('life-badge-bronze') && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-bronze');
         game.badgeAnimation('life-badge-bronze');
       }
@@ -1172,26 +1186,18 @@ var game = {
     }
 
     if(!game.badges.includes('time-badge-gold') || !game.badges.includes('time-badge-silver') || !game.badges.includes('time-badge-bronze')) {
-      let cnt = 0;
-      
-      for(let i = game.level-levelOffset; i > -1 && (level.maxTime - game.gameTimes[levels[i].name]) > (levels[i].maxTimeIntervals[0]); i--) {
-        cnt++;
-      }
-
-      if(cnt > 7 && !game.hasBadge('time-badge-gold')) {
+      if(game.badgeTime > 7 && !game.hasBadge('time-badge-gold')) {
         game.badges.push('time-badge-gold');
         game.badges = game.badges.filter(e => e !== 'time-badge-silver');
         game.badgeAnimation('time-badge-gold');
-      } else if (cnt > 4 && !game.hasBadge('time-badge-silver') && !game.hasBadge('time-badge-gold')) {
+      } else if (game.badgeTime > 4 && !game.hasBadge('time-badge-silver') && !game.hasBadge('time-badge-gold')) {
         game.badges.push('time-badge-silver');
         game.badges = game.badges.filter(e => e !== 'time-badge-bronze');
         game.badgeAnimation('time-badge-silver');
-      } else if (cnt > 2 && !game.hasBadge('time-badge-bronze') && !game.hasBadge('time-badge-silver') && !game.hasBadge('time-badge-gold')) {
+      } else if (game.badgeTime > 2 && !game.hasBadge('time-badge-bronze') && !game.hasBadge('time-badge-silver') && !game.hasBadge('time-badge-gold')) {
         game.badges.push('time-badge-bronze');
         game.badgeAnimation('time-badge-bronze');
       }
-
-      game.badgesProgress['time-badge'] = cnt
     }
 
     if(!game.badges.includes('complete-badge-gold')) {
@@ -1199,8 +1205,6 @@ var game = {
         game.badges.push('complete-badge-gold');
         game.badgeAnimation('complete-badge-gold');
       }
-
-      game.badgesProgress['complete-badge'] = game.solved.length
     }
 
     if(!game.badges.includes('all-lessons-badge-gold')) {
@@ -1208,8 +1212,6 @@ var game = {
         game.badges.push('all-lessons-badge-gold');
         game.badgeAnimation('all-lessons-badge-gold');
       }
-
-      game.badgesProgress['all-lessons-badge'] = game.solved.length
     }
     game.setBadges();
   },
@@ -1237,17 +1239,17 @@ var game = {
       $('#info-life-badge-header').html(badges_info_text['life-badge-obtained'].header[game.language])
     } else if(game.badges.includes('life-badge-silver')) {
       $('#info-life-badge-progress').show();
-      $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['life-badge']/badges_info_text['life-badge-gold'].divider*100}%"></div></div>`)
+      $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgeLives/badges_info_text['life-badge-gold'].divider*100}%"></div></div>`)
       $('#info-life-badge-body').html(badges_info_text['life-badge-gold'].body[game.language])
       $('#info-life-badge-header').html(badges_info_text['life-badge-gold'].header[game.language])
     } else if (game.badges.includes('life-badge-bronze')) {
       $('#info-life-badge-progress').show();
-      $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['life-badge']/badges_info_text['life-badge-silver'].divider*100}%"></div></div>`)
+      $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgeLives/badges_info_text['life-badge-silver'].divider*100}%"></div></div>`)
       $('#info-life-badge-body').html(badges_info_text['life-badge-silver'].body[game.language])
       $('#info-life-badge-header').html(badges_info_text['life-badge-silver'].header[game.language])
     } else {
       $('#info-life-badge-progress').show();
-      $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['life-badge']/badges_info_text['life-badge-bronze'].divider*100}%"></div></div>`)
+      $('#info-life-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgeLives/badges_info_text['life-badge-bronze'].divider*100}%"></div></div>`)
       $('#info-life-badge-body').html(badges_info_text['life-badge-bronze'].body[game.language])
       $('#info-life-badge-header').html(badges_info_text['life-badge-bronze'].header[game.language])
     }
@@ -1258,17 +1260,17 @@ var game = {
       $('#info-time-badge-header').html(badges_info_text['time-badge-obtained'].header[game.language])
     } else if(game.badges.includes('time-badge-silver')) {
       $('#info-time-badge-progress').show();
-      $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['time-badge']/badges_info_text['time-badge-gold'].divider*100}%"></div></div>`)
+      $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgeTime/badges_info_text['time-badge-gold'].divider*100}%"></div></div>`)
       $('#info-time-badge-header').html(badges_info_text['time-badge-gold'].header[game.language])
       $('#info-time-badge-body').html(badges_info_text['time-badge-gold'].body[game.language])
     } else if (game.badges.includes('time-badge-bronze')) {
       $('#info-time-badge-progress').show();
-      $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['time-badge']/badges_info_text['time-badge-silver'].divider*100}%"></div></div>`)
+      $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgeTime/badges_info_text['time-badge-silver'].divider*100}%"></div></div>`)
       $('#info-time-badge-header').html(badges_info_text['time-badge-silver'].header[game.language])
       $('#info-time-badge-body').html(badges_info_text['time-badge-silver'].body[game.language])
     } else {
       $('#info-time-badge-progress').show();
-      $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['time-badge']/badges_info_text['time-badge-bronze'].divider*100}%"></div></div>`)
+      $('#info-time-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgeTime/badges_info_text['time-badge-bronze'].divider*100}%"></div></div>`)
       $('#info-time-badge-header').html(badges_info_text['time-badge-bronze'].header[game.language])
       $('#info-time-badge-body').html(badges_info_text['time-badge-bronze'].body[game.language])
     }
@@ -1300,7 +1302,7 @@ var game = {
       $('#info-all-lessons-badge-header').html(badges_info_text['all-lessons-badge-obtained'].header[game.language])
     } else {
       $('#info-all-lessons-badge-progress').show();
-      $('#info-all-lessons-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['all-lessons-badge']/badges_info_text['all-lessons-badge-gold'].divider*100}%"></div></div>`)
+      $('#info-all-lessons-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.solved.length/badges_info_text['all-lessons-badge-gold'].divider*100}%"></div></div>`)
       $('#info-all-lessons-badge-header').html(badges_info_text['all-lessons-badge-gold'].header[game.language])
       $('#info-all-lessons-badge-body').html(badges_info_text['all-lessons-badge-gold'].body[game.language])
     }
@@ -1311,7 +1313,7 @@ var game = {
       $('#info-complete-badge-header').html(badges_info_text['complete-badge-obtained'].header[game.language])
     } else {
       $('#info-complete-badge-progress').show();
-      $('#info-complete-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.badgesProgress['complete-badge']/badges_info_text['complete-badge-gold'].divider*100}%"></div></div>`)
+      $('#info-complete-badge-progress').html(`<div id="progress-bar-border"><div id="progress-bar" style="width: ${game.solved.length/badges_info_text['complete-badge-gold'].divider*100}%"></div></div>`)
       $('#info-complete-badge-header').html(badges_info_text['complete-badge-gold'].header[game.language])
       $('#info-complete-badge-body').html(badges_info_text['complete-badge-gold'].body[game.language])
     }
@@ -1329,11 +1331,14 @@ var game = {
     localStorage.setItem('gameQuit', JSON.stringify(game.gameQuit));
     localStorage.setItem('tutorialFinish', JSON.stringify(game.tutorialFinish));
     localStorage.setItem('nameSubmit', JSON.stringify(game.nameSubmit));
+    localStorage.setItem('nickname', JSON.stringify(game.nickname));
     localStorage.setItem('badges', JSON.stringify(game.badges));
     localStorage.setItem('remainingLives', JSON.stringify(game.remainingLives));
     localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
     localStorage.setItem('gameTimes', JSON.stringify(game.gameTimes));
     localStorage.setItem('pageTimes', JSON.stringify(game.pageTimes));
+    localStorage.setItem('badgeTime', JSON.stringify(game.badgeTime));
+    localStorage.setItem('badgeLives', JSON.stringify(game.badgeLives));
   },
 
   resetGameStats: function() {
@@ -1357,7 +1362,8 @@ var game = {
     game.gameWin = 'false';
     game.gameQuit = 'false';
     game.nameSubmit = 'false';
-    game.tutorialFinish = 'false';
+    game.badgeLives = 0;
+    game.badgeTime = 0;
   },
 
   loadHighscoreFinish: function() {

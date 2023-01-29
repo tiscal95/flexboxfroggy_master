@@ -101,8 +101,8 @@ badges_info_text = {
             'en': '<strong>Time Keeper (Gold)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 7 Levels in folge in weniger als ein Viertel der Zeit.',
-            'en': 'Solve 7 levels in a row in less than a quarter of the given time..'
+            'de': 'Löse 7 Levels in folge in weniger als ein Fünftel der Zeit.',
+            'en': 'Solve 7 levels in a row in less than a fifth of the given time..'
         },
         'divider': 8
     },
@@ -112,8 +112,8 @@ badges_info_text = {
             'en': '<strong>Time Keeper (Silver)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 5 Levels in folge in weniger als ein Viertel der Zeit.',
-            'en': 'Solve 5 levels in a row in less than a quarter of the given time.'
+            'de': 'Löse 5 Levels in folge in weniger als ein Fünftel der Zeit.',
+            'en': 'Solve 5 levels in a row in less than a fifth of the given time.'
         },
         'divider': 5
     },
@@ -123,8 +123,8 @@ badges_info_text = {
             'en': '<strong>Time Keeper (Bronze)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 3 Levels in folge in weniger als ein Viertel der Zeit.',
-            'en': 'Solve 3 levels in a row in less than a quarter of the given time.'
+            'de': 'Löse 3 Levels in folge in weniger als ein Fünftel der Zeit.',
+            'en': 'Solve 3 levels in a row in less than a fifth of the given time.'
         },
         'divider': 3
     },
