@@ -1270,13 +1270,13 @@ tr:last-child td:last-child { border-bottom-right-radius: 10px; }
   width: 200px;
 }
 
-#info-tutorial-lifes .info-tutorial-text, #info-tutorial-badges .info-tutorial-text, #info-tutorial-time .info-tutorial-text, #info-tutorial-check .info-tutorial-text, #info-tutorial-nextlevel .info-tutorial-text, #info-tutorial-code .info-tutorial-text {
+#info-tutorial-lifes .info-tutorial-text, #info-tutorial-badges .info-tutorial-text, #info-tutorial-time .info-tutorial-text, #info-tutorial-check .info-tutorial-text, #info-tutorial-nextlevel .info-tutorial-text, #info-tutorial-code .info-tutorial-text, #info-tutorial-intro .info-tutorial-text {
   color: #fff;
   font-size: 9pt;
   font-family: Tahoma;
 }
 
-#info-tutorial-lifes .info-tutorial-next, #info-tutorial-badges .info-tutorial-next, #info-tutorial-time .info-tutorial-next, #info-tutorial-check .info-tutorial-next, #info-tutorial-nextlevel .info-tutorial-next, #info-tutorial-code .info-tutorial-next {
+#info-tutorial-lifes .info-tutorial-next, #info-tutorial-badges .info-tutorial-next, #info-tutorial-time .info-tutorial-next, #info-tutorial-check .info-tutorial-next, #info-tutorial-nextlevel .info-tutorial-next, #info-tutorial-code .info-tutorial-next, #info-tutorial-intro .info-tutorial-next {
   display: flex;
   justify-content: right;
   margin-top: 0.6em;
@@ -1331,4 +1331,9 @@ tr:last-child td:last-child { border-bottom-right-radius: 10px; }
 #info-tutorial-lifes {
   bottom: 188px;
   left: 67px;
+}
+
+#info-tutorial-intro {
+  top: 227px;
+  left: 230px;
 }

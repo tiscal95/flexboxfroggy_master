@@ -76,8 +76,8 @@ var messages = {
     'de': 'Spiel Starten',
   },
   nextTutorial1: {
-    'en': 'Got it!',
-    'de': 'Alles klar!',
+    'en': 'Next',
+    'de': 'Weiter',
   },
   nextTutorial2: {
     'en': 'Next',
@@ -98,5 +98,9 @@ var messages = {
   nextTutorial6: {
     'en': 'Next',
     'de': 'Weiter',
+  },
+  nextTutorial7: {
+    'en': 'Got it!',
+    'de': 'Alles klar!',
   }
 };

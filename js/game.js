@@ -155,7 +155,7 @@ var game = {
       game.gameFinish();
     });
 
-    $('#nextTutorial6').on('click', function() {
+    $('#nextTutorial7').on('click', function() {
       game.tutorialFinish = 'true';
     });
 
@@ -645,6 +645,7 @@ var game = {
         });
       }
     });
+    $('#info-tutorial-intro .info-tutorial-text').html(tutorial_text["info-tutorial-intro"][game.language]);
     $('#info-tutorial-code .info-tutorial-text').html(tutorial_text["info-tutorial-code"][game.language]);
     $('#info-tutorial-badges .info-tutorial-text').html(tutorial_text["info-tutorial-badges"][game.language]);
     $('#info-tutorial-time .info-tutorial-text').html(tutorial_text["info-tutorial-time"][game.language]);
@@ -1389,8 +1390,8 @@ var game = {
   },
 
   makeTutorial: function() {
-    const popups = ['#info-tutorial-code', '#info-tutorial-check', '#info-tutorial-lifes', '#info-tutorial-nextlevel', '#info-tutorial-time', '#info-tutorial-badges'];
-    const elements = ['#code', '#check', '#lives-indicator', '#next', '#time-indicator', '#badges-indicator'];
+    const popups = ['#info-tutorial-intro', '#info-tutorial-code', '#info-tutorial-check', '#info-tutorial-lifes', '#info-tutorial-nextlevel', '#info-tutorial-time', '#info-tutorial-badges'];
+    const elements = ['#instructions', '#code', '#check', '#lives-indicator', '#next', '#time-indicator', '#badges-indicator'];
     let x = 0;
 
     function tutorial() {
@@ -1404,7 +1405,7 @@ var game = {
         $(elements[x - 1]).removeClass('z-index-tutorial');
       }
 
-      if(x > 5) {
+      if(x > 6) {
         $('#blur-screen').hide();
         setTimeout(function() {
           x = 0;

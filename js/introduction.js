@@ -30,7 +30,11 @@ var tutorial_text = {
     'info-tutorial-badges': {
         'en': 'You can obtain several badges throughout the game depending on how well you perform.',
         'de': 'Du kannst während des Spiels verschiedene Badges verdienen.'
-    }
+    },
+    'info-tutorial-intro': {
+        'en': 'This part gives you some extra info that helps you with solving the level.',
+        'de': 'Hier siehst du ein paar Zusatzinfos, die dir beim Lösen des Levels helfen.'
+    },
 }
 
 var finish_text = {
