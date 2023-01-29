@@ -153,6 +153,8 @@ var game = {
 
     $('#end').on('click', function() {
       game.gameFinish();
+      game.levelEndTimer();
+      game.saveToLocalStorage();
     });
 
     $('#nextTutorial7').on('click', function() {
@@ -800,7 +802,7 @@ var game = {
 
   saveLevelTime: function() {
     const level = levels[game.level]
-    game.levelTimes[level.name] = game.levelMiliseconds;
+    game.levelTimes[level.name] = level.maxTime - game.levelMiliseconds;
   },
 
   // shake code field if wrong answer
@@ -1189,7 +1191,7 @@ var game = {
     }
 
     if(!game.badges.includes('all-lessons-badge-gold')) {
-      if(levels.length == game.solved.length) {
+      if(game.solved.length == 20) {
         game.badges.push('all-lessons-badge-gold');
         game.badgeAnimation('all-lessons-badge-gold');
       }
@@ -1321,7 +1323,7 @@ var game = {
   },
 
   resetGameStats: function() {
-    game.user += "_replay"
+    game.user += "_r"
     localStorage.setItem('user', game.user);
 
     game.level = 0;

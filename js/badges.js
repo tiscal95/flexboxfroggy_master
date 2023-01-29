@@ -147,7 +147,7 @@ badges_info_text = {
             'de': 'Löse alle Levels mit neuen Flexbox-Befehlen.',
             'en': 'Solve all levels with new flexbox properties.'
         },
-        'divider': 10
+        'divider': 20
     },
     'complete-badge-obtained': {
         'header': {
@@ -168,6 +168,6 @@ badges_info_text = {
             'de': 'Löse alle Levels.',
             'en': 'Solve all levels.'
         },
-        'divider': 14
+        'divider': 24
     }
 }

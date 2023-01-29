@@ -491,7 +491,7 @@ pre {
   background-color: rgba(255, 255, 255, 0.2);
 }
 
-#lives-indicator, #badges-indicator {
+#lives-indicator, .badges-indicator {
   display: flex;
   flex-direction: row;
   gap: 0.2em;
@@ -1265,7 +1265,7 @@ tr:last-child td:last-child { border-bottom-right-radius: 10px; }
 
 /* tutorial */
 
-#info-tutorial-lifes, #info-tutorial-badges, #info-tutorial-time, #info-tutorial-check, #info-tutorial-nextlevel, #info-tutorial-code {
+#info-tutorial-lifes, #info-tutorial-badges, #info-tutorial-time, #info-tutorial-check, #info-tutorial-nextlevel, #info-tutorial-code, #info-tutorial-intro {
   display: none;
   width: 200px;
 }
@@ -1292,6 +1292,26 @@ tr:last-child td:last-child { border-bottom-right-radius: 10px; }
   z-index: 998;
   opacity: 1 !important;
   pointer-events: none;
+}
+
+.z-index-tutorial div.all-lessons-badge div.bg {
+  background-image: url("../images/all-lessons-badge-gold.png") !important;
+}
+
+.z-index-tutorial div.complete-badge div.bg {
+  background-image: url("../images/complete-badge-gold.png") !important;
+}
+
+.z-index-tutorial div.life-badge div.bg {
+  background-image: url("../images/life-badge-gold.png") !important;
+}
+
+.z-index-tutorial div.time-badge div.bg {
+  background-image: url("../images/time-badge-gold.png") !important;
+}
+
+.z-index-tutorial div.points-badge div.bg {
+  background-image: url("../images/points-badge-gold.png") !important;
 }
 
 #blur-screen {
