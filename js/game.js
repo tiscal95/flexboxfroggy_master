@@ -826,10 +826,8 @@ var game = {
   // when all game levels solved
   gameFinish: function(win = false) {
     if(win) {
-      console.log('executed 1')
       game.gameWin = 'true';
     } else {
-      console.log('executed 2')
       game.gameQuit = 'true';
     }
 
@@ -838,12 +836,10 @@ var game = {
     $('.finish-points').html(this.totalPoints())
 
     if(game.gameWin == 'true') {
-      console.log('executed 3')
       game.showFinishScreen(true);
     }
 
     if(game.gameQuit == 'true') {
-      console.log('executed 4')
       game.showQuitScreen(true);
     }
    
@@ -994,7 +990,7 @@ var game = {
     }
 
     if (game.gameTimes[level.name] != null) {
-      game.levelMiliseconds = game.gameTimes[level.name];
+      game.levelMiliseconds = level.maxTime - game.gameTimes[level.name];
       this.setTimeIndicator(game.levelMiliseconds);
     } else {
       game.levelMiliseconds = level.maxTime;
@@ -1075,8 +1071,6 @@ var game = {
   },
 
   showQuitScreen: function(show) {
-    console.log('executed')
-    console.log(this.showQuitScreen.caller)
     if(show) {
       $('#highscore-name-input').attr('placeholder', finish_text.placeholder[game.language])
       $('#highscore-form-submit').html(finish_text.button[game.language])
@@ -1138,6 +1132,7 @@ var game = {
   },
 
   checkBadges: function(levelOffset = 0) {
+    const level = levels[game.level]
     if(!game.hasBadge('life-badge-gold') || !game.hasBadge('life-badge-silver') || !game.hasBadge('life-badge-bronze')) {
       let cnt = 0;
       
@@ -1178,7 +1173,7 @@ var game = {
     if(!game.badges.includes('time-badge-gold') || !game.badges.includes('time-badge-silver') || !game.badges.includes('time-badge-bronze')) {
       let cnt = 0;
       
-      for(let i = game.level-levelOffset; i > -1 && game.gameTimes[levels[i].name] > (levels[i].maxTimeIntervals[0]); i--) {
+      for(let i = game.level-levelOffset; i > -1 && (level.maxTime - game.gameTimes[levels[i].name]) > (levels[i].maxTimeIntervals[0]); i--) {
         cnt++;
       }
 
@@ -1354,6 +1349,7 @@ var game = {
     game.pageEndTimes = {};
     game.pageTimes = {};
     game.gameTimes = {};
+    game.levelTimes = {};
     game.remainingLives = {};
     game.badges = [];
     game.points = {};
