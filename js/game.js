@@ -318,7 +318,6 @@ var game = {
         $('#finish-screen-2').hide();
         $('#highscore-name-input').attr('disabled', false);
         $('#highscore-form-submit').attr('disabled', false);
-        $('#highscore-form').hide();
 
         game.showIntroduction(true);
 
@@ -480,7 +479,6 @@ var game = {
     $('#highscore-name-input').attr('disabled', false);
     $('#highscore-form-submit').attr('disabled', false);
     $('.level-marker').removeClass('solved');
-    $('#highscore-form').show();
     game.checkBadges();
     sounds.background.currentTime = 0;
     sounds.background.play();
@@ -561,19 +559,19 @@ var game = {
     this.setCodeBox();
     this.setLevelIndicator();
     game.setBadgeIndicators();
-    game.showCodeLine(false);
+    game.showCodeLine(true);
 
     if(game.lives == 0) {
       game.showGameOverScreen(true);
       game.showStartScreen(false);
       game.showPauseScreen(false);
       game.disableButtons(true, false, true)
-    } else if(game.levelMiliseconds < level.maxTime) {
-      game.resumeGame();
-    } else {
+    } else if (game.level == 0) {
       game.showStartScreen(true);
       game.showPauseScreen(false);
       game.disableButtons(true, false, false) 
+    } else {
+      game.resumeGame();
     }
 
     // load instructions
@@ -1086,6 +1084,7 @@ var game = {
       $('#finish-text').html(finish_text.game_complete[game.language]);
       $('#sidebar-finish').show();
       $('#sidebar').hide();
+      $('#highscore-form').show();
     } else {
       $('#sidebar-finish').hide();
       $('#sidebar').show();
@@ -1099,6 +1098,7 @@ var game = {
       $('#finish-text').html(finish_text.game_quit[game.language]);
       $('#sidebar-finish').show();
       $('#sidebar').hide();
+      $('#highscore-form').show();
     } else {
       $('#sidebar-finish').hide();
       $('#sidebar').show();
