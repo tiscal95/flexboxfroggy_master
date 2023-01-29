@@ -17,8 +17,11 @@ var game = {
   levelMiliseconds: null,
   pageStartTimes: (localStorage.pageStartTimes && JSON.parse(localStorage.pageStartTimes)) || {},
   pageEndTimes: (localStorage.pageEndTimes && JSON.parse(localStorage.pageEndTimes)) || {},
+  levelStartTimes: (localStorage.levelStartTimes && JSON.parse(localStorage.levelStartTimes)) || {},
+  levelEndTimes: (localStorage.levelEndTimes && JSON.parse(localStorage.levelEndTimes)) || {},
   pageTimes: (localStorage.pageTimes && JSON.parse(localStorage.pageTimes)) || {},
   levelTimes: (localStorage.levelTimes && JSON.parse(localStorage.levelTimes)) || {},
+  gameTimes: (localStorage.gameTimes && JSON.parse(localStorage.gameTimes)) || {},
   // additions
   lives: 0,
   remainingLives: (localStorage.remainingLives && JSON.parse(localStorage.remainingLives)) || {},
@@ -154,6 +157,8 @@ var game = {
     $('#end').on('click', function() {
       game.gameFinish();
       game.levelEndTimer();
+      game.pageEndTimes[level.name] = new Date();
+      game.pageTimes[level.name] = new Date(game.pageEndTimes[level.name]) - new Date(game.pageStartTimes[level.name])
       game.saveToLocalStorage();
     });
 
@@ -190,6 +195,8 @@ var game = {
         game.printLives();
         if(game.lives == 0) {
           game.levelEndTimer();
+          game.levelEndTimes[level.name] = new Date();
+          game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
           game.showGameOverScreen(true);
           game.saveToDatabase();
           sounds.background.pause();
@@ -279,7 +286,10 @@ var game = {
       var r = confirm(warningReset);
 
       if (r) {
+        const level = levels[game.level]
         game.levelEndTimer();
+        game.levelEndTimes[level.name] = new Date();
+        game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
 
         game.resetGameStats();
         $('#finish-screen-1').show();
@@ -704,6 +714,9 @@ var game = {
     // if correct true -> level solved
     if (correct) {
       game.levelEndTimer();
+      game.levelEndTimes[level.name] = new Date();
+      game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
+
       game.solved.push(level.name);
       game.savePoints();
       game.saveLives();        
@@ -802,7 +815,7 @@ var game = {
 
   saveLevelTime: function() {
     const level = levels[game.level]
-    game.levelTimes[level.name] = level.maxTime - game.levelMiliseconds;
+    game.gameTimes[level.name] = level.maxTime - game.levelMiliseconds;
   },
 
   // shake code field if wrong answer
@@ -841,6 +854,7 @@ var game = {
     db.collection("gamified-version").doc(game.user).set({
       points: game.points,
       remainingLives: game.remainingLives,
+      gameTimes: game.gameTimes,
       levelTimes: game.levelTimes,
       pageTimes: game.pageTimes
     })
@@ -975,9 +989,12 @@ var game = {
     if (!game.pageStartTimes[level.name]) {
       game.pageStartTimes[level.name] = new Date();
     }
+    if (!game.levelStartTimes[level.name]) {
+      game.levelStartTimes[level.name] = new Date();
+    }
 
-    if (game.levelTimes[level.name] != null) {
-      game.levelMiliseconds = game.levelTimes[level.name];
+    if (game.gameTimes[level.name] != null) {
+      game.levelMiliseconds = game.gameTimes[level.name];
       this.setTimeIndicator(game.levelMiliseconds);
     } else {
       game.levelMiliseconds = level.maxTime;
@@ -1161,7 +1178,7 @@ var game = {
     if(!game.badges.includes('time-badge-gold') || !game.badges.includes('time-badge-silver') || !game.badges.includes('time-badge-bronze')) {
       let cnt = 0;
       
-      for(let i = game.level-levelOffset; i > -1 && game.levelTimes[levels[i].name] > (levels[i].maxTimeIntervals[0]); i--) {
+      for(let i = game.level-levelOffset; i > -1 && game.gameTimes[levels[i].name] > (levels[i].maxTimeIntervals[0]); i--) {
         cnt++;
       }
 
@@ -1319,6 +1336,7 @@ var game = {
     localStorage.setItem('badges', JSON.stringify(game.badges));
     localStorage.setItem('remainingLives', JSON.stringify(game.remainingLives));
     localStorage.setItem('levelTimes', JSON.stringify(game.levelTimes));
+    localStorage.setItem('gameTimes', JSON.stringify(game.gameTimes));
     localStorage.setItem('pageTimes', JSON.stringify(game.pageTimes));
   },
 
@@ -1335,7 +1353,7 @@ var game = {
     game.pageStartTimes = {};
     game.pageEndTimes = {};
     game.pageTimes = {};
-    game.levelTimes = {};
+    game.gameTimes = {};
     game.remainingLives = {};
     game.badges = [];
     game.points = {};
