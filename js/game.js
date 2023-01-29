@@ -194,6 +194,7 @@ var game = {
         game.saveLives();
         game.printLives();
         if(game.lives == 0) {
+          const level = levels[game.level];
           game.levelEndTimer();
           game.levelEndTimes[level.name] = new Date();
           game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
@@ -223,7 +224,7 @@ var game = {
         return;
       }
 
-      const level = levels[game.level]
+      const level = levels[game.level];
       game.pageEndTimes[level.name] = new Date();
       game.pageTimes[level.name] = game.pageEndTimes[level.name] - game.pageStartTimes[level.name]
       $(this).removeClass('animated animation'); 
