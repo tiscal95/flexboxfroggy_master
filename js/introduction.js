@@ -42,6 +42,10 @@ var finish_text = {
         'en': '<p>You win! Thanks to your mastery of flexbox, you were able to help all of the frogs to get to their lilypads. <br>Just look how happy they are! :D</p>',
         'de': '<p>Gewonnen! Dank deines Flexbox-Könnens warst du in der Lage, alle Frösche zu ihrem Seerosenblatt zu führen. <br>Sieh dir an, wie glücklich sie sind! :D</p>',
     },
+    'game_lose' : {
+        'en': '<p>Oh, too bad! I am sure you can make it! Just try again! Without you Froggy and his friends might never find their ways to the lilypads :(</p>',
+        'de': '<p>Oh, schade! Ich bin mir sicher, dass du es schaffen kannst! Versuche es doch noch einmal. Ohne dich werden Froggy und seine Freunde vielleicht nie den Weg zu den Rosenblättern finden :(</p>',
+    },
     'game_quit': {
         'en': '<p>Oh, why quit so fast! I am sure you could have made it. Now Froggy and his friends might never find their ways to the lilypads :(</p>',
         'de': '<p>Oh, warum wirfst du so früh das Handtuch? Jetzt werden Froggy und seine Freunde vielleicht nie den Weg zu den Rosenblättern finden :(</p>',

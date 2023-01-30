@@ -29,12 +29,14 @@ var game = {
   badges: (localStorage.badges && JSON.parse(localStorage.badges)) || [],
   badgesProgress: {},
   gameWin: (localStorage.gameWin && JSON.parse(localStorage.gameWin)) || 'false',
+  gameLose: (localStorage.gameLose && JSON.parse(localStorage.gameLose)) || 'false',
   gameQuit: (localStorage.gameQuit && JSON.parse(localStorage.gameQuit)) || 'false',
   tutorialFinish: (localStorage.tutorialFinish && JSON.parse(localStorage.tutorialFinish)) || 'false',
   nickname: (localStorage.nickname && JSON.parse(localStorage.nickname)) || '',
   nameSubmit: (localStorage.nameSubmit && JSON.parse(localStorage.nameSubmit)) || 'false',
   badgeTime: parseInt(localStorage.badgeTime, 10) || 0,
   badgeLives: parseInt(localStorage.badgeLives, 10) || 0,
+  session: parseInt(localStorage.level, 10) || 0,
   //original
   colorblind: (localStorage.colorblind && JSON.parse(localStorage.colorblind)) || 'false',
   sound: (localStorage.sound && JSON.parse(localStorage.sound)) || 'true',
@@ -96,17 +98,10 @@ var game = {
       game.showIntroduction(false);
     }
 
-    if (game.gameWin == 'true') {
-      game.gameFinish(true);
-      if (game.nameSubmit == 'true') {
-        $('#highscore-form').hide();
-        game.loadHighscoreFinish();
-      }
-      return;
-    }
-
-    if (game.gameQuit == 'true') {
-      game.gameFinish();
+    if (game.gameWin == 'true' || game.gameLose == 'true' || game.gameQuit == 'true') {
+      game.gameWin == 'true' && game.gameFinish(1);
+      game.gameLose == 'true' && game.gameFinish(2);
+      game.gameQuit == 'true' && game.gameFinish(3);
       if (game.nameSubmit == 'true') {
         $('#highscore-form').hide();
         game.loadHighscoreFinish();
@@ -160,7 +155,7 @@ var game = {
 
     $('#end').on('click', function() {
       const level = levels[game.level]
-      game.gameFinish();
+      game.gameFinish(3);
       game.levelEndTimer();
       game.pageEndTimes[level.name] = new Date();
       game.pageTimes[level.name] = new Date(game.pageEndTimes[level.name]) - new Date(game.pageStartTimes[level.name])
@@ -219,7 +214,7 @@ var game = {
           game.levelEndTimer();
           game.levelEndTimes[level.name] = new Date();
           game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
-          game.showGameOverScreen(true);
+          game.gameFinish(2);
           game.saveToDatabase();
           sounds.background.pause();
           sounds.lost.play();
@@ -254,7 +249,7 @@ var game = {
       setTimeout(function() {
         game.saveToDatabase();
         if (game.level >= levels.length - 1) {
-          game.gameFinish(true);
+          game.gameFinish(1);
         } else {
           game.levelMiliseconds = null;
           game.next();
@@ -567,9 +562,14 @@ var game = {
       game.showPauseScreen(false);
       game.disableButtons(true, false, true)
     } else if (game.level == 0) {
-      game.showStartScreen(true);
-      game.showPauseScreen(false);
-      game.disableButtons(true, false, false) 
+      if (game.levelMiliseconds < level.maxTime) {
+        game.resumeGame();
+      } else {
+        game.showStartScreen(true);
+        game.showPauseScreen(false);
+        game.showCodeLine(false);
+        game.disableButtons(true, false, false) 
+      }
     } else {
       game.resumeGame();
     }
@@ -809,7 +809,7 @@ var game = {
     const pointsSilver = game.badges.filter(function (str) { return str.includes('silver'); }).length * 1000;
     const pointsGold = game.badges.filter(function (str) { return str.includes('gold'); }).length * 2500;
 
-    return pointsLevels + pointsBronze + pointsSilver + pointsGold;
+    return Math.floor(pointsLevels + pointsBronze + pointsSilver + pointsGold);
   },
 
   // save answer in array
@@ -842,10 +842,12 @@ var game = {
   },
 
   // when all game levels solved
-  gameFinish: function(win = false) {
-    if(win) {
+  gameFinish: function(win = 3) {
+    if(win == 1) {
       game.gameWin = 'true';
-    } else {
+    } else if (win == 2) {
+      game.gameLose = 'true';
+    } else if (win == 3) {
       game.gameQuit = 'true';
     }
 
@@ -859,26 +861,49 @@ var game = {
       game.showFinishScreen(true);
     }
 
+    if(game.gameLose == 'true') {
+      game.showLoseScreen(true);
+    }
+
     if(game.gameQuit == 'true') {
       game.showQuitScreen(true);
     }
-   
   },
 
   saveToDatabase: function() {
     //save to database
-    db.collection("gamified-version").doc(game.user).set({
-      points: game.points,
-      remainingLives: game.remainingLives,
-      gameTimes: game.gameTimes,
-      levelTimes: game.levelTimes,
-      pageTimes: game.pageTimes
-    })
-    .then((docRef) => {
-      console.log("Document written.");
-    })
-    .catch((error) => {
-        console.error("Error adding document: ", error);
+    let data = db.collection("gamified-version").doc(game.user).get().then((doc) => {
+      if(doc.data()) {
+        let sessionsData = doc.data().sessions;
+        sessionsData[game.session] = {
+          points: game.points,
+          remainingLives: game.remainingLives,
+          gameTimes: game.gameTimes,
+          levelTimes: game.levelTimes,
+          pageTimes: game.pageTimes
+        };
+        db.collection("gamified-version").doc(game.user).set({ sessions: sessionsData })
+        .then((docRef) => {
+          console.log("Document written.");
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+      } else {
+        db.collection("gamified-version").doc(game.user).set({ sessions: [{
+          points: game.points,
+          remainingLives: game.remainingLives,
+          gameTimes: game.gameTimes,
+          levelTimes: game.levelTimes,
+          pageTimes: game.pageTimes
+        }]})
+        .then((docRef) => {
+          console.log("Document written.");
+        })
+        .catch((error) => {
+            console.error("Error adding document: ", error);
+        });
+      }
     });
   },
 
@@ -1082,6 +1107,20 @@ var game = {
       $('#highscore-name-input').attr('placeholder', finish_text.placeholder[game.language])
       $('#highscore-form-submit').html(finish_text.button[game.language])
       $('#finish-text').html(finish_text.game_complete[game.language]);
+      $('#sidebar-finish').show();
+      $('#sidebar').hide();
+      $('#highscore-form').show();
+    } else {
+      $('#sidebar-finish').hide();
+      $('#sidebar').show();
+    }
+  },
+
+  showLoseScreen: function(show) {
+    if(show) {
+      $('#highscore-name-input').attr('placeholder', finish_text.placeholder[game.language])
+      $('#highscore-form-submit').html(finish_text.button[game.language])
+      $('#finish-text').html(finish_text.game_lose[game.language]);
       $('#sidebar-finish').show();
       $('#sidebar').hide();
       $('#highscore-form').show();
@@ -1326,8 +1365,10 @@ var game = {
     localStorage.setItem('colorblind', JSON.stringify(game.colorblind));
     localStorage.setItem('sound', JSON.stringify(game.sound));
     // additional
+    localStorage.setItem('session', JSON.stringify(game.session));
     localStorage.setItem('points', JSON.stringify(game.points));
     localStorage.setItem('gameWin', JSON.stringify(game.gameWin));
+    localStorage.setItem('gameLose', JSON.stringify(game.gameLose));
     localStorage.setItem('gameQuit', JSON.stringify(game.gameQuit));
     localStorage.setItem('tutorialFinish', JSON.stringify(game.tutorialFinish));
     localStorage.setItem('nameSubmit', JSON.stringify(game.nameSubmit));
@@ -1342,7 +1383,7 @@ var game = {
   },
 
   resetGameStats: function() {
-    game.user += "_r"
+    game.session++;
     localStorage.setItem('user', game.user);
 
     game.level = 0;
@@ -1360,6 +1401,7 @@ var game = {
     game.badges = [];
     game.points = {};
     game.gameWin = 'false';
+    game.gameLose = 'false';
     game.gameQuit = 'false';
     game.nameSubmit = 'false';
     game.badgeLives = 0;
