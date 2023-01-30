@@ -129,6 +129,7 @@ var game = {
       game.nickname = $('#highscore-name-input')[0].value;
       game.nameSubmit = 'true';
 
+      game.saveToDatabase();
       db.collection("highscore").add({
         name: $('#highscore-name-input')[0].value,
         points: game.totalPoints(),
@@ -872,10 +873,11 @@ var game = {
 
   saveToDatabase: function() {
     //save to database
-    let data = db.collection("gamified-version").doc(game.user).get().then((doc) => {
+    db.collection("gamified-version").doc(game.user).get().then((doc) => {
       if(doc.data()) {
         let sessionsData = doc.data().sessions;
         sessionsData[game.session] = {
+          nickname: game.nickname,
           points: game.points,
           remainingLives: game.remainingLives,
           gameTimes: game.gameTimes,
@@ -891,6 +893,7 @@ var game = {
         });
       } else {
         db.collection("gamified-version").doc(game.user).set({ sessions: [{
+          nickname: game.nickname,
           points: game.points,
           remainingLives: game.remainingLives,
           gameTimes: game.gameTimes,
@@ -1383,6 +1386,7 @@ var game = {
   },
 
   resetGameStats: function() {
+    game.saveToDatabase();
     game.session++;
     localStorage.setItem('user', game.user);
 

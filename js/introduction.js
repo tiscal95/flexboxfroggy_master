@@ -51,8 +51,8 @@ var finish_text = {
         'de': '<p>Oh, warum wirfst du so früh das Handtuch? Jetzt werden Froggy und seine Freunde vielleicht nie den Weg zu den Rosenblättern finden :(</p>',
     },
     'placeholder': {
-        'en': 'Enter your name',
-        'de': 'Gib deinen Namen ein'
+        'en': 'Enter your FHS number',
+        'de': 'Gib deinen FHS nummer ein'
     },
     'button': {
         'en': 'Submit',
