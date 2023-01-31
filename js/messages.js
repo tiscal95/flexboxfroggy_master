@@ -106,5 +106,9 @@ var messages = {
   end: {
     'en': 'Quit Game',
     'de': 'Spiel Beenden',
+  },
+  retry: {
+    'en': 'Play again!',
+    'de': 'Nochmal spielen!',
   }
 };
