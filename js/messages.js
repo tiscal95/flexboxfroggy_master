@@ -102,5 +102,9 @@ var messages = {
   nextTutorial7: {
     'en': 'Got it!',
     'de': 'Alles klar!',
+  },
+  end: {
+    'en': 'Quit Game',
+    'de': 'Spiel Beenden',
   }
 };

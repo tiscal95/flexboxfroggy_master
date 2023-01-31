@@ -217,11 +217,11 @@ body {
   pointer-events: none;
 }
 
-#highscore-name-input, #highscore-form-submit {
+#highscore-name-input, #highscore-form-submit, #fhs-input {
   display: block;
 }
 
-#highscore-name-input {
+#highscore-name-input, #fhs-input {
   height: 2.5em;
   width: 20rem;
   padding: 1em;
@@ -230,12 +230,18 @@ body {
   text-align: center;
 }
 
-#highscore-name-input:invalid {
+#highscore-name-input:invalid, #fhs-input:invalid {
   color: #D11606;
 }
-#highscore-name-input:valid {
+#highscore-name-input:valid, #fhs-input:valid {
   color: #3fa142;
 }
+
+#startGame:disabled {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 
 pre {
   margin: 0;

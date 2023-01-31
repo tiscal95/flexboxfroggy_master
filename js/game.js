@@ -60,6 +60,8 @@ var game = {
     }
 
     game.translate();
+    $('#fhs-input').attr('placeholder', finish_text.placeholder_fhs[game.language]);
+    $('#startGame').attr('disabled', true);
     $('#level-counter .total').text(levels.length);
     $('#editor').show();
     $('#share').hide();
@@ -122,6 +124,14 @@ var game = {
       }
     });
 
+    $('#fhs-input').on('input', function() {
+      if($('#fhs-input')[0].value.length > 0 && $('#fhs-input')[0].checkValidity()) {
+        $('#startGame').attr('disabled', false);
+      } else {
+        $('#startGame').attr('disabled', true);
+      }
+    });
+
     $('#highscore-form-submit').on('click', function() {
       $('#highscore-name-input').attr('disabled', true);
       $('#highscore-form-submit').attr('disabled', true);
@@ -148,6 +158,7 @@ var game = {
     
     const tutorial = this.makeTutorial();
     $('#startGame').on('click', function() {
+      game.user = $('#fhs-input')[0].value + '_' + (new Date()).toISOString();
       sounds.background.loop = true;
       sounds.background.play();
       game.showIntroduction(false);
@@ -158,8 +169,6 @@ var game = {
       const level = levels[game.level]
       game.gameFinish(3);
       game.levelEndTimer();
-      game.pageEndTimes[level.name] = new Date();
-      game.pageTimes[level.name] = new Date(game.pageEndTimes[level.name]) - new Date(game.pageStartTimes[level.name])
       game.saveToLocalStorage();
     });
 
@@ -212,9 +221,9 @@ var game = {
         game.saveLives();
         game.printLives();
         if(game.lives == 0) {
-          game.levelEndTimer();
           game.levelEndTimes[level.name] = new Date();
           game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
+          game.levelEndTimer();
           game.gameFinish(2);
           game.saveToDatabase();
           sounds.background.pause();
@@ -296,30 +305,6 @@ var game = {
     // ??
     $('#editor').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function() {
       $(this).removeClass();
-    });
-
-    // if game is reset
-    $('#labelReset').on('click', function() {
-      var warningReset = messages.warningReset[game.language] || messages.warningReset.en;
-      var r = confirm(warningReset);
-
-      if (r) {
-        const level = levels[game.level]
-        game.levelEndTimer();
-        game.levelEndTimes[level.name] = new Date();
-        game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
-
-        game.resetGameStats();
-        $('#finish-screen-1').show();
-        $('#finish-screen-2').hide();
-        $('#highscore-name-input').attr('disabled', false);
-        $('#highscore-form-submit').attr('disabled', false);
-
-        game.showIntroduction(true);
-
-        game.loadLevel(levels[0]);
-        $('.level-marker').removeClass('solved');
-      }
     });
 
     // if settings are opened/ close, show/ hide level submenu
@@ -736,9 +721,9 @@ var game = {
     const level = levels[game.level]
     // if correct true -> level solved
     if (correct) {
-      game.levelEndTimer();
       game.levelEndTimes[level.name] = new Date();
       game.levelTimes[level.name] = new Date(game.levelEndTimes[level.name]) - new Date(game.levelStartTimes[level.name])
+      game.levelEndTimer();
       game.solved.push(level.name);
       game.savePoints();
       game.saveLives();        
@@ -877,10 +862,11 @@ var game = {
       if(doc.data()) {
         let sessionsData = doc.data().sessions;
         sessionsData[game.session] = {
-          nickname: game.nickname,
+          gameWin: game.gameWin,
+          gameLose: game.gameLose,
+          gameQuit: game.gameQuit,
           points: game.points,
           remainingLives: game.remainingLives,
-          gameTimes: game.gameTimes,
           levelTimes: game.levelTimes,
           pageTimes: game.pageTimes
         };
@@ -893,10 +879,11 @@ var game = {
         });
       } else {
         db.collection("gamified-version").doc(game.user).set({ sessions: [{
-          nickname: game.nickname,
+          gameWin: game.gameWin,
+          gameLose: game.gameLose,
+          gameQuit: game.gameQuit,
           points: game.points,
           remainingLives: game.remainingLives,
-          gameTimes: game.gameTimes,
           levelTimes: game.levelTimes,
           pageTimes: game.pageTimes
         }]})
@@ -1030,12 +1017,6 @@ var game = {
 
   setTimers: function() {
     const level = levels[game.level]
-    if (!game.pageStartTimes[level.name]) {
-      game.pageStartTimes[level.name] = new Date();
-    }
-    if (!game.levelStartTimes[level.name]) {
-      game.levelStartTimes[level.name] = new Date();
-    }
 
     if (game.gameTimes[level.name] != null) {
       game.levelMiliseconds = level.maxTime - game.gameTimes[level.name];
@@ -1044,6 +1025,13 @@ var game = {
       game.levelMiliseconds = level.maxTime;
       this.setTimeIndicator(game.levelMiliseconds);
     };
+
+    if (!game.pageStartTimes[level.name]) {
+      game.pageStartTimes[level.name] = new Date();
+    }
+    if (!game.levelStartTimes[level.name]) {
+      game.levelStartTimes[level.name] = new Date();
+    }
   },
   
   setLives: function() {
@@ -1367,6 +1355,7 @@ var game = {
     localStorage.setItem('solved', JSON.stringify(game.solved));
     localStorage.setItem('colorblind', JSON.stringify(game.colorblind));
     localStorage.setItem('sound', JSON.stringify(game.sound));
+    localStorage.setItem('user', game.user);
     // additional
     localStorage.setItem('session', JSON.stringify(game.session));
     localStorage.setItem('points', JSON.stringify(game.points));
@@ -1388,7 +1377,6 @@ var game = {
   resetGameStats: function() {
     game.saveToDatabase();
     game.session++;
-    localStorage.setItem('user', game.user);
 
     game.level = 0;
     game.answers = {};
@@ -1398,8 +1386,10 @@ var game = {
     game.levelMiliseconds = null;
     game.pageStartTimes = {};
     game.pageEndTimes = {};
-    game.pageTimes = {};
+    game.levelStartTimes = {};
+    game.levelEndTimes = {};
     game.gameTimes = {};
+    game.pageTimes = {};
     game.levelTimes = {};
     game.remainingLives = {};
     game.badges = [];
@@ -1479,6 +1469,7 @@ var game = {
         setTimeout(function() {
           x = 0;
         }, 2000);
+        return;
       }
       const tooltipX = $(elements[x]).offset().left;
       const tooltipY = $(elements[x]).offset().top + $(elements[x]).height() + 13;
