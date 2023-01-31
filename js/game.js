@@ -554,8 +554,8 @@ var game = {
     this.setGameScreen();
     this.setCodeBox();
     this.setLevelIndicator();
-    game.setBadgeIndicators();
-    game.showCodeLine(true);
+    this.setBadges();
+    this.showCodeLine(true);
 
     if(game.lives == 0) {
       game.showGameOverScreen(true);
@@ -1201,14 +1201,14 @@ var game = {
       if(game.badgeLives > 7 && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-gold');
         game.badges = game.badges.filter(e => e !== 'life-badge-silver');
-        game.badgeAnimation('life-badge-gold');
+        game.badgeAnimation('life-badge-gold', badges_info_text['life-badge-obtained'].header[game.language]);
       } else if (game.badgeLives > 4 && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-silver');
         game.badges = game.badges.filter(e => e !== 'life-badge-bronze');
-        game.badgeAnimation('life-badge-silver');
+        game.badgeAnimation('life-badge-silver', badges_info_text['life-badge-gold'].header[game.language]);
       } else if (game.badgeLives > 2 && !game.hasBadge('life-badge-bronze') && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-bronze');
-        game.badgeAnimation('life-badge-bronze');
+        game.badgeAnimation('life-badge-bronze', badges_info_text['life-badge-silver'].header[game.language]);
       }
     }
 
@@ -1216,14 +1216,14 @@ var game = {
       if(this.totalPoints() > 21999.9 && !game.hasBadge('points-badge-gold')) {
         game.badges.push('points-badge-gold');
         game.badges = game.badges.filter(e => e !== 'points-badge-silver');
-        game.badgeAnimation('points-badge-gold');
+        game.badgeAnimation('points-badge-gold', badges_info_text['points-badge-obtained'].header[game.language]);
       } else if (this.totalPoints() > 14999.9 && !game.hasBadge('points-badge-silver') && !game.hasBadge('points-badge-gold')) {
         game.badges.push('points-badge-silver');
         game.badges = game.badges.filter(e => e !== 'points-badge-bronze');
-        game.badgeAnimation('points-badge-silver');
+        game.badgeAnimation('points-badge-silver', badges_info_text['points-badge-gold'].header[game.language]);
       } else if (this.totalPoints() > 7999.9 && !game.hasBadge('points-badge-bronze') && !game.hasBadge('points-badge-silver') && !game.hasBadge('points-badge-gold')) {
         game.badges.push('points-badge-bronze');
-        game.badgeAnimation('points-badge-bronze');
+        game.badgeAnimation('points-badge-bronze', badges_info_text['points-badge-silver'].header[game.language]);
       }
     }
 
@@ -1231,28 +1231,28 @@ var game = {
       if(game.badgeTime > 7 && !game.hasBadge('time-badge-gold')) {
         game.badges.push('time-badge-gold');
         game.badges = game.badges.filter(e => e !== 'time-badge-silver');
-        game.badgeAnimation('time-badge-gold');
+        game.badgeAnimation('time-badge-gold', badges_info_text['time-badge-obtained'].header[game.language]);
       } else if (game.badgeTime > 4 && !game.hasBadge('time-badge-silver') && !game.hasBadge('time-badge-gold')) {
         game.badges.push('time-badge-silver');
         game.badges = game.badges.filter(e => e !== 'time-badge-bronze');
-        game.badgeAnimation('time-badge-silver');
+        game.badgeAnimation('time-badge-silver', badges_info_text['time-badge-gold'].header[game.language]);
       } else if (game.badgeTime > 2 && !game.hasBadge('time-badge-bronze') && !game.hasBadge('time-badge-silver') && !game.hasBadge('time-badge-gold')) {
         game.badges.push('time-badge-bronze');
-        game.badgeAnimation('time-badge-bronze');
+        game.badgeAnimation('time-badge-bronze', badges_info_text['time-badge-silver'].header[game.language]);
       }
     }
 
     if(!game.badges.includes('complete-badge-gold')) {
       if(levels.length == game.solved.length) {
         game.badges.push('complete-badge-gold');
-        game.badgeAnimation('complete-badge-gold');
+        game.badgeAnimation('complete-badge-gold', badges_info_text['complete-badge-obtained'].header[game.language]);
       }
     }
 
     if(!game.badges.includes('all-lessons-badge-gold')) {
       if(game.solved.length == 20) {
         game.badges.push('all-lessons-badge-gold');
-        game.badgeAnimation('all-lessons-badge-gold');
+        game.badgeAnimation('all-lessons-badge-gold', badges_info_text['all-lessons-badge-obtained'].header[game.language]);
       }
     }
     game.setBadges();
@@ -1435,24 +1435,24 @@ var game = {
     $('.highscore-data').html(tableData);
   },
 
-  badgeAnimation: function(badgeName) {
+  badgeAnimation: function(className, badgeName) {
     $("#wrapper").append(
-      `<div id="achievement-${badgeName}" class="achievement">
-        <div class="text"><strong>Congratulations!</strong> You just unlocked a new badge!</div>
+      `<div id="achievement-${className}" class="achievement">
+        <div class="text">${badges_info_text['badge-unlocked'][game.language]} ${badgeName}</div>
         <div class="icon-smiley"></div>
         <div class="ribbon"></div>
       </div>`
     )
     setTimeout(function() {
-      $(`#achievement-${badgeName} .ribbon`).toggleClass("active");
-      $(`#achievement-${badgeName} .icon-smiley`).toggleClass("active").addClass(badgeName);
-      $(`#achievement-${badgeName}`).toggleClass("active");
+      $(`#achievement-${className} .ribbon`).toggleClass("active");
+      $(`#achievement-${className} .icon-smiley`).toggleClass("active").addClass(className);
+      $(`#achievement-${className}`).toggleClass("active");
       setTimeout(function() {
-        $(`#achievement-${badgeName} .ribbon`).toggleClass("active");
-        $(`#achievement-${badgeName} .icon-smiley`).toggleClass("active");
-        $(`#achievement-${badgeName}`).toggleClass("active");
+        $(`#achievement-${className} .ribbon`).toggleClass("active");
+        $(`#achievement-${className} .icon-smiley`).toggleClass("active");
+        $(`#achievement-${className}`).toggleClass("active");
         setTimeout(function() {
-          $(`#achievement-${badgeName}`).remove();
+          $(`#achievement-${className}`).remove();
         }, 2000)
       }, 5000);
     }, 1000)
@@ -1480,7 +1480,12 @@ var game = {
           x = 0;
         }, 2000);
       }
-      $(popups[x]).addClass('show-tutorial');
+      const tooltipX = $(elements[x]).offset().left;
+      const tooltipY = $(elements[x]).offset().top + $(elements[x]).height() + 13;
+      $(popups[x]).addClass('show-tutorial').css({
+        top: tooltipY,
+        left: tooltipX
+      });
       $(elements[x]).addClass('z-index-tutorial');
       x++;
     };

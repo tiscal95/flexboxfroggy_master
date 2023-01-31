@@ -1327,33 +1327,3 @@ tr:last-child td:last-child { border-bottom-right-radius: 10px; }
   display: block !important;
   z-index: 999;
 }
-
-#info-tutorial-check {
-  top: 50px;
-  left: 83px;
-}
-
-#info-tutorial-nextlevel {
-  top: 50px;
-  left: 156px;
-}
-
-#info-tutorial-badges {
-  left: 61px;
-  top: 0px;
-}
-
-#info-tutorial-time {
-  left: 67px;
-  top: 33px;
-}
-
-#info-tutorial-lifes {
-  bottom: 188px;
-  left: 67px;
-}
-
-#info-tutorial-intro {
-  top: 227px;
-  left: 230px;
-}
