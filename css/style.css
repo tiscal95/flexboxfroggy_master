@@ -453,6 +453,10 @@ pre {
   overflow: auto;
 }
 
+#code:disabled {
+  background-color: #a0dda1;
+}
+
 #level-counter, #time-counter, #points-counter {
   flex-grow: 1;
   position: relative;
@@ -697,7 +701,8 @@ button#check:not(.disabled):hover {
 #pause-screen, #start-screen, #game-over-screen {
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px) grayscale(100%);
   position: absolute;
   display: flex;
   justify-content: center;
