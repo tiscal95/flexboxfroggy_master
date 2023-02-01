@@ -200,7 +200,6 @@ var game = {
       game.check();
       const level = levels[game.level];
       if ($('#check').hasClass('disabled')) {
-        console.log('here')
         if (level.lives == game.lives) {
           game.badgeLives++;
         } else {
@@ -866,12 +865,9 @@ var game = {
 
   saveToDatabase: function() {
     //save to database
-    console.log(game.user)
     db.collection("gamified-version").doc(game.user).get().then((doc) => {
       if(doc.data()) {
         let sessionsData = doc.data().sessions;
-        console.log(sessionsData)
-        console.log(game.session)
         sessionsData[game.session] = {
           gameWin: game.gameWin,
           gameLose: game.gameLose,
@@ -1429,7 +1425,6 @@ var game = {
   },
 
   resetGameStats: function() {
-    console.log(this.resetGameStats.caller)
     game.saveToDatabase();
     game.session++;
 
