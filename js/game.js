@@ -843,7 +843,6 @@ var game = {
     }
 
     this.setGameScreen();
-    this.setUpBoard(levelWin);
     $('.frog .bg').removeClass('pulse').addClass('bounce');
     $('.finish-points').html(this.totalPoints());
     $('#player-name').html(game.nickname);
@@ -851,14 +850,17 @@ var game = {
 
     if(game.gameWin == 'true') {
       game.showFinishScreen(true);
+      this.setUpBoard(levelWin);
     }
 
     if(game.gameLose == 'true') {
       game.showLoseScreen(true);
+      this.setUpBoard(levelLose);
     }
 
     if(game.gameQuit == 'true') {
       game.showQuitScreen(true);
+      this.setUpBoard(levelLose);
     }
   },
 

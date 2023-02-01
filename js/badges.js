@@ -19,8 +19,8 @@ badges_info_text = {
             'en': '<strong>Life Defender (Silver)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 15 Levels in folge, ohne ein Leben zu verlieren, um die goldene Medaille zu bekommen.',
-            'en': 'Solve 15 levels in a row without losing a life to get the gold badge.'
+            'de': 'Löse 15 Levels in folge, ohne ein Leben zu verlieren, um die goldene Medaille zu bekommen.<br><i>(+2000 XP)</i>',
+            'en': 'Solve 15 levels in a row without losing a life to get the gold badge.<br><i>(+2000 XP)</i>'
         },
         'divider': 15
     },
@@ -30,8 +30,8 @@ badges_info_text = {
             'en': '<strong>Life Defender (Bronze)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 10 Levels in folge, ohne ein Leben zu verlieren, um die silberne Medaille zu bekommen.',
-            'en': 'Solve 10 levels in a row without losing a life to get the silver badge.'
+            'de': 'Löse 10 Levels in folge, ohne ein Leben zu verlieren, um die silberne Medaille zu bekommen.<br><i>(+1000 XP)</i>',
+            'en': 'Solve 10 levels in a row without losing a life to get the silver badge.<br><i>(+1000 XP)</i>'
         },
         'divider': 10
     },
@@ -41,8 +41,8 @@ badges_info_text = {
             'en': '<strong>Life Defender</strong><br>'
         },
         'body' : {
-            'de': 'Löse 5 Levels in folge, ohne ein Leben zu verlieren, um die bronzene Medaille zu bekommen.',
-            'en': 'Solve 5 levels in a row without losing a life to get the bronze badge.'
+            'de': 'Löse 5 Levels in folge, ohne ein Leben zu verlieren, um die bronzene Medaille zu bekommen.<br><i>(+500 XP)</i>',
+            'en': 'Solve 5 levels in a row without losing a life to get the bronze badge.<br><i>(+500 XP)</i>'
         },
         'divider': 5
     },
@@ -62,8 +62,8 @@ badges_info_text = {
             'en': '<strong>Points Collector (Silver)</strong><br>'
         },
         'body' : {
-            'de': 'Sammle 20.000 Punkte, um die goldene Medaille zu bekommen.',
-            'en': 'Collect 20.000 Points to get the golden badge.'
+            'de': 'Sammle 20.000 Punkte, um die goldene Medaille zu bekommen.<br><i>(+2000 XP)</i>',
+            'en': 'Collect 20.000 Points to get the golden badge.<br><i>(+2000 XP)</i>'
         },
         'divider': 8
     },
@@ -73,8 +73,8 @@ badges_info_text = {
             'en': '<strong>Points Collector (Bronze)</strong><br>'
         },
         'body' : {
-            'de': 'Sammle 15.000 Punkte, um die silberne Medaille zu bekommen.',
-            'en': 'Collect 15.000 Points to get the silver badge.'
+            'de': 'Sammle 15.000 Punkte, um die silberne Medaille zu bekommen.<br><i>(+1000 XP)</i>',
+            'en': 'Collect 15.000 Points to get the silver badge.<br><i>(+1000 XP)</i>'
         },
         'divider': 5
     },
@@ -84,8 +84,8 @@ badges_info_text = {
             'en': '<strong>Points Collector</strong><br>'
         },
         'body' : {
-            'de': 'Sammle 8.000 Punkte, um die bronzene Medaille zu bekommen.',
-            'en': 'Collect 8.000 Points to get the bronze badge.'
+            'de': 'Sammle 8.000 Punkte, um die bronzene Medaille zu bekommen.<br><i>(+500 XP)</i>',
+            'en': 'Collect 8.000 Points to get the bronze badge.<br><i>(+500 XP)</i>'
         },
         'divider': 3
     },
@@ -105,8 +105,8 @@ badges_info_text = {
             'en': '<strong>Time Keeper (Silver)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 7 Levels in folge in weniger als ein Fünftel der Zeit, um die goldene Medaille zu bekommen.',
-            'en': 'Solve 7 levels in a row in less than a fifth of the given time to get the gold badge.'
+            'de': 'Löse 7 Levels in folge in weniger als ein Fünftel der Zeit, um die goldene Medaille zu bekommen.<br><i>(+2000 XP)</i>',
+            'en': 'Solve 7 levels in a row in less than a fifth of the given time to get the gold badge.<br><i>(+2000 XP)</i>'
         },
         'divider': 8
     },
@@ -116,8 +116,8 @@ badges_info_text = {
             'en': '<strong>Time Keeper (Bronze)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 5 Levels in folge in weniger als ein Fünftel der Zeit, um die silberne Medaille zu bekommen.',
-            'en': 'Solve 5 levels in a row in less than a fifth of the given time to get the silver badge.'
+            'de': 'Löse 5 Levels in folge in weniger als ein Fünftel der Zeit, um die silberne Medaille zu bekommen.<br><i>(+1000 XP)</i>',
+            'en': 'Solve 5 levels in a row in less than a fifth of the given time to get the silver badge.<br><i>(+1000 XP)</i>'
         },
         'divider': 5
     },
@@ -127,8 +127,8 @@ badges_info_text = {
             'en': '<strong>Time Keeper</strong><br>'
         },
         'body' : {
-            'de': 'Löse 3 Levels in folge in weniger als ein Fünftel der Zeit, um die bronzene Medaille zu bekommen.',
-            'en': 'Solve 3 levels in a row in less than a fifth of the given time to get the bronze badge.'
+            'de': 'Löse 3 Levels in folge in weniger als ein Fünftel der Zeit, um die bronzene Medaille zu bekommen.<br><i>(+500 XP)</i>',
+            'en': 'Solve 3 levels in a row in less than a fifth of the given time to get the bronze badge.<br><i>(+500 XP)</i>'
         },
         'divider': 3
     },
@@ -148,8 +148,8 @@ badges_info_text = {
             'en': '<strong>Hearts Collector</strong><br>'
         },
         'body' : {
-            'de': 'Sammle 85 Leben, um die goldene Medaille zu bekommen.',
-            'en': 'Collect 85 lives to get the golden badge.'
+            'de': 'Sammle 85 Leben, um die goldene Medaille zu bekommen.<br><i>(+2000 XP)</i>',
+            'en': 'Collect 85 lives to get the golden badge.<br><i>(+2000 XP)</i>'
         },
     },
     'heart-badge-silver': {
@@ -158,8 +158,8 @@ badges_info_text = {
             'en': '<strong>Hearts Collector</strong><br>'
         },
         'body' : {
-            'de': 'Sammle 65 Leben, um die silberne Medaille zu bekommen.',
-            'en': 'Collect 65 lives to get the silver badge.'
+            'de': 'Sammle 65 Leben, um die silberne Medaille zu bekommen.<br><i>(+1000 XP)</i>',
+            'en': 'Collect 65 lives to get the silver badge.<br><i>(+1000 XP)</i>'
         },
     },
     'heart-badge-bronze': {
@@ -168,8 +168,8 @@ badges_info_text = {
             'en': '<strong>Hearts Collector</strong><br>'
         },
         'body' : {
-            'de': 'Sammle 45 Leben, um die bronzene Medaille zu bekommen.',
-            'en': 'Collect 45 lives to get the bronze badge.'
+            'de': 'Sammle 45 Leben, um die bronzene Medaille zu bekommen.<br><i>(+500 XP)</i>',
+            'en': 'Collect 45 lives to get the bronze badge.<br><i>(+500 XP)</i>'
         },
     },
     'complete-badge-obtained': {
@@ -188,8 +188,8 @@ badges_info_text = {
             'en': '<strong>Froggy Master (Silver)</strong><br>'
         },
         'body' : {
-            'de': 'Löse alle Levels, um die goldene Medaille zu bekommen.',
-            'en': 'Solve all levels to get the golden badge.'
+            'de': 'Löse alle Levels, um die goldene Medaille zu bekommen.<br><i>(+2000 XP)</i>',
+            'en': 'Solve all levels to get the golden badge.<br><i>(+2000 XP)</i>'
         },
         'divider': 24
     },
@@ -199,8 +199,8 @@ badges_info_text = {
             'en': '<strong>Froggy Master (Bronze)</strong><br>'
         },
         'body' : {
-            'de': 'Löse drei Viertel der Levels, um die silberne Medaille zu bekommen.',
-            'en': 'Solve three quarters of the levels to get the silver badge.'
+            'de': 'Löse drei Viertel der Levels, um die silberne Medaille zu bekommen.<br><i>(+1000 XP)</i>',
+            'en': 'Solve three quarters of the levels to get the silver badge.<br><i>(+1000 XP)</i>'
         },
         'divider': 12
     },
@@ -210,8 +210,8 @@ badges_info_text = {
             'en': '<strong>Froggy Master</strong><br>'
         },
         'body' : {
-            'de': 'Löse die Hälfte aller Levels, um die bronzene Medaille zu bekommen.',
-            'en': 'Solve half of all levels to get the bronze badge.'
+            'de': 'Löse die Hälfte aller Levels, um die bronzene Medaille zu bekommen.<br><i>(+500 XP)</i>',
+            'en': 'Solve half of all levels to get the bronze badge.<br><i>(+500 XP)</i>'
         },
         'divider': 18
     }

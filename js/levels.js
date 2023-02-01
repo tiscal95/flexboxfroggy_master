@@ -384,3 +384,18 @@ var levelWin = {
   before: "#pond {\n  display: flex;\n",
   after: "}"
 };
+
+var levelLose = {
+  name: 'win',
+  instructions: {
+    'en': '<p>You win! Thanks to your mastery of flexbox, you were able to help all of the frogs to their lilypads. Just look how hoppy they are!</p><p>If you found this ribbeting, be sure to visit <a href="https://codepip.com/games/grid-garden/">Grid Garden</a> to learn about another powerful new feature of CSS layout. You can also find other coding games over at <a href="https://codepip.com/">Codepip</a>. And be sure to share Flexbox Froggy with your friends!</p>',
+    'de': '<p>Gewonnen! Dank deines flexbox-Könnens warst du in der Lage, alle Frösche zu ihrem Seerosenblatt zu führen. Sieh dir an, wie glücklich sie sind!</p><p>Wenn dir das gefallen hat, schau dir meine anderen Projekte auf meinem <a href="https://thomaspark.co">Blog</a> oder <a href="https://twitter.com/thomashpark">Twitter</a> an und teile Flexbox Froggy mit deinen Freunden!</p>',
+  },
+  maxPoints: 500,
+  maxTimeIntervals: [15000, 30000, 45000, 60000, 120],
+  board: ' r r       rrr r   r    ',
+  classes: {'#pond, #background': 'wrap'},
+  style: {},
+  before: "#pond {\n  display: flex;\n",
+  after: "}"
+};
