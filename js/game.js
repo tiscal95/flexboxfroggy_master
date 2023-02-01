@@ -1195,15 +1195,15 @@ var game = {
   checkBadges: function() {
     const level = levels[game.level]
     if(!game.hasBadge('life-badge-gold') || !game.hasBadge('life-badge-silver') || !game.hasBadge('life-badge-bronze')) {
-      if(game.badgeLives > 7 && !game.hasBadge('life-badge-gold')) {
+      if(game.badgeLives > 14 && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-gold');
         game.badges = game.badges.filter(e => e !== 'life-badge-silver');
         game.badgeAnimation('life-badge-gold', badges_info_text['life-badge-obtained'].header[game.language]);
-      } else if (game.badgeLives > 4 && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
+      } else if (game.badgeLives > 9 && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-silver');
         game.badges = game.badges.filter(e => e !== 'life-badge-bronze');
         game.badgeAnimation('life-badge-silver', badges_info_text['life-badge-gold'].header[game.language]);
-      } else if (game.badgeLives > 2 && !game.hasBadge('life-badge-bronze') && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
+      } else if (game.badgeLives > 4 && !game.hasBadge('life-badge-bronze') && !game.hasBadge('life-badge-silver') && !game.hasBadge('life-badge-gold')) {
         game.badges.push('life-badge-bronze');
         game.badgeAnimation('life-badge-bronze', badges_info_text['life-badge-silver'].header[game.language]);
       }

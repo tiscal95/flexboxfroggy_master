@@ -19,10 +19,10 @@ badges_info_text = {
             'en': '<strong>Life Defender (Silver)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 7 Levels in folge, ohne ein Leben zu verlieren, um die goldene Medaille zu bekommen.',
-            'en': 'Solve 7 levels in a row without losing a life to get the gold badge.'
+            'de': 'Löse 15 Levels in folge, ohne ein Leben zu verlieren, um die goldene Medaille zu bekommen.',
+            'en': 'Solve 15 levels in a row without losing a life to get the gold badge.'
         },
-        'divider': 8
+        'divider': 15
     },
     'life-badge-silver': {
         'header': {
@@ -30,10 +30,10 @@ badges_info_text = {
             'en': '<strong>Life Defender (Bronze)</strong><br>'
         },
         'body' : {
-            'de': 'Löse 5 Levels in folge, ohne ein Leben zu verlieren, um die silberne Medaille zu bekommen.',
-            'en': 'Solve 5 levels in a row without losing a life to get the silver badge.'
+            'de': 'Löse 10 Levels in folge, ohne ein Leben zu verlieren, um die silberne Medaille zu bekommen.',
+            'en': 'Solve 10 levels in a row without losing a life to get the silver badge.'
         },
-        'divider': 5
+        'divider': 10
     },
     'life-badge-bronze': {
         'header': {
@@ -41,10 +41,10 @@ badges_info_text = {
             'en': '<strong>Life Defender</strong><br>'
         },
         'body' : {
-            'de': 'Löse 3 Levels in folge, ohne ein Leben zu verlieren, um die bronzene Medaille zu bekommen.',
-            'en': 'Solve 3 levels in a row without losing a life to get the bronze badge.'
+            'de': 'Löse 5 Levels in folge, ohne ein Leben zu verlieren, um die bronzene Medaille zu bekommen.',
+            'en': 'Solve 5 levels in a row without losing a life to get the bronze badge.'
         },
-        'divider': 3
+        'divider': 5
     },
     'points-badge-obtained': {
         'header': {
