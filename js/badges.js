@@ -132,46 +132,87 @@ badges_info_text = {
         },
         'divider': 3
     },
-    'all-lessons-badge-obtained': {
+    'heart-badge-obtained': {
         'header': {
             'de': '<strong>Hungry Learner</strong><br>',
             'en': '<strong>Hungry Learner</strong><br>'
         },
         'body' : {
-            'de': 'Glückwunsch, du hast die Goldene Medaille erreicht.',
+            'de': 'Glückwunsch, du hast die goldene Medaille erreicht.',
             'en': 'Congrats! You obtained the golden badge.'
         }
     },
-    'all-lessons-badge-gold': {
+    'heart-badge-gold': {
         'header': {
-            'de': '<strong>Hungry Learner</strong><br>',
-            'en': '<strong>Hungry Learner</strong><br>'
+            'de': '<strong>Hearts Collector</strong><br>',
+            'en': '<strong>Hearts Collector</strong><br>'
         },
         'body' : {
-            'de': 'Löse alle Levels mit neuen Flexbox-Befehlen, um die Medaille zu bekommen.',
-            'en': 'Solve all levels with new flexbox properties to get the badge.'
+            'de': 'Sammle 85 Leben, um die goldene Medaille zu bekommen.',
+            'en': 'Collect 85 lives to get the golden badge.'
         },
-        'divider': 20
+    },
+    'heart-badge-silver': {
+        'header': {
+            'de': '<strong>Hearts Collector</strong><br>',
+            'en': '<strong>Hearts Collector</strong><br>'
+        },
+        'body' : {
+            'de': 'Sammle 65 Leben, um die silberne Medaille zu bekommen.',
+            'en': 'Collect 65 lives to get the silver badge.'
+        },
+    },
+    'heart-badge-bronze': {
+        'header': {
+            'de': '<strong>Hearts Collector</strong><br>',
+            'en': '<strong>Hearts Collector</strong><br>'
+        },
+        'body' : {
+            'de': 'Sammle 45 Leben, um die bronzene Medaille zu bekommen.',
+            'en': 'Collect 45 lives to get the bronze badge.'
+        },
     },
     'complete-badge-obtained': {
         'header': {
-            'de': '<strong>Froggy Master</strong><br>',
-            'en': '<strong>Froggy Master</strong><br>'
+            'de': '<strong>Froggy Master (Gold)</strong><br>',
+            'en': '<strong>Froggy Master (Gold)</strong><br>'
         },
         'body' : {
-            'de': 'Glückwunsch, du hast die Goldene Medaille erreicht.',
+            'de': 'Glückwunsch, du hast die goldene Medaille erreicht.',
             'en': 'Congrats! You obtained the golden badge.'
         }
     },
     'complete-badge-gold': {
         'header': {
+            'de': '<strong>Froggy Master (Silber)</strong><br>',
+            'en': '<strong>Froggy Master (Silver)</strong><br>'
+        },
+        'body' : {
+            'de': 'Löse alle Levels, um die goldene Medaille zu bekommen.',
+            'en': 'Solve all levels to get the golden badge.'
+        },
+        'divider': 24
+    },
+    'complete-badge-silver': {
+        'header': {
+            'de': '<strong>Froggy Master (Bronze)</strong><br>',
+            'en': '<strong>Froggy Master (Bronze)</strong><br>'
+        },
+        'body' : {
+            'de': 'Löse drei Viertel der Levels, um die silberne Medaille zu bekommen.',
+            'en': 'Solve three quarters of the levels to get the silver badge.'
+        },
+        'divider': 12
+    },
+    'complete-badge-bronze': {
+        'header': {
             'de': '<strong>Froggy Master</strong><br>',
             'en': '<strong>Froggy Master</strong><br>'
         },
         'body' : {
-            'de': 'Löse alle Levels, um die Medaille zu bekommen.',
-            'en': 'Solve all levels to get the badge.'
+            'de': 'Löse die Hälfte aller Levels, um die bronzene Medaille zu bekommen.',
+            'en': 'Solve half of all levels to get the bronze badge.'
         },
-        'divider': 24
+        'divider': 18
     }
 }

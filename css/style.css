@@ -94,12 +94,12 @@ body {
   justify-content: space-between;
 }
 
-.all-lessons-badge, .complete-badge, .life-badge, .points-badge, .time-badge {
+.heart-badge, .complete-badge, .life-badge, .points-badge, .time-badge {
   width: 40px;
   height: 50px;
 }
 
-.all-lessons-badge:active, .complete-badge:active, .life-badge:active, .points-badge:active, .time-badge:active {
+.heart-badge:active, .complete-badge:active, .life-badge:active, .points-badge:active, .time-badge:active {
   pointer-events: none;
 }
 
@@ -112,7 +112,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.all-lessons-badge .bg, .complete-badge .bg, .life-badge .bg, .points-badge .bg, .time-badge .bg  {
+.heart-badge .bg, .complete-badge .bg, .life-badge .bg, .points-badge .bg, .time-badge .bg  {
   background-image: url("../images/badge-inactive.png");
   width: 90%;
   height: 90%;
@@ -121,7 +121,7 @@ body {
   background-repeat: no-repeat;
 }
 
-.all-lessons-badge .info, .complete-badge .info, .life-badge .info, .points-badge .info, .time-badge .info  {
+.heart-badge .info, .complete-badge .info, .life-badge .info, .points-badge .info, .time-badge .info  {
   display: none;
   top: 30px;
   right: 31px;
@@ -184,8 +184,24 @@ body {
   background-image: url("../images/complete-badge-gold.png");
 }
 
-.all-lessons-badge .bg.gold {
-  background-image: url("../images/all-lessons-badge-gold.png");
+.complete-badge .bg.silver {
+  background-image: url("../images/complete-badge-silver.png");
+}
+
+.complete-badge .bg.bronze {
+  background-image: url("../images/complete-badge-bronze.png");
+}
+
+.heart-badge .bg.gold {
+  background-image: url("../images/heart-badge-gold.png");
+}
+
+.heart-badge .bg.silver {
+  background-image: url("../images/heart-badge-silver.png");
+}
+
+.heart-badge .bg.bronze {
+  background-image: url("../images/heart-badge-bronze.png");
 }
 
 .title {
@@ -286,9 +302,11 @@ a:hover {
   border-bottom: 1px solid rgba(255, 255, 255, 0.7);
 }
 
-#info-all-lessons-badge, #info-complete-badge, #info-points-badge, #info-time-badge, #info-life-badge {
+#info-heart-badge, #info-complete-badge, #info-points-badge, #info-time-badge, #info-life-badge {
   display: none;
   width: 200px;
+  margin-top: 8px;
+  margin-left: -6px;
 }
 
 .tooltip {
@@ -1077,12 +1095,28 @@ button#check:not(.disabled):hover {
   background-image: url(../images/points-badge-bronze.png);
 }
 
-.icon-smiley.all-lessons-badge-gold {
-  background-image: url(../images/all-lessons-badge-gold.png);
+.icon-smiley.heart-badge-gold {
+  background-image: url(../images/heart-badge-gold.png);
+}
+
+.icon-smiley.heart-badge-silver {
+  background-image: url(../images/heart-badge-silver.png);
+}
+
+.icon-smiley.heart-badge-bronze {
+  background-image: url(../images/heart-badge-bronze.png);
 }
 
 .icon-smiley.complete-badge-gold {
   background-image: url(../images/complete-badge-gold.png);
+}
+
+.icon-smiley.complete-badge-silver {
+  background-image: url(../images/complete-badge-silver.png);
+}
+
+.icon-smiley.complete-badge-bronze {
+  background-image: url(../images/complete-badge-bronze.png);
 }
 
 .icon-smiley::before
@@ -1300,8 +1334,8 @@ tr:last-child td:last-child { border-bottom-right-radius: 10px; }
   pointer-events: none;
 }
 
-.z-index-tutorial div.all-lessons-badge div.bg {
-  background-image: url("../images/all-lessons-badge-gold.png") !important;
+.z-index-tutorial div.heart-badge div.bg {
+  background-image: url("../images/heart-badge-gold.png") !important;
 }
 
 .z-index-tutorial div.complete-badge div.bg {
