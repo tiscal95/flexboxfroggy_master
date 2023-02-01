@@ -1002,9 +1002,11 @@ var game = {
     } else if(timeElapsed > level.maxTimeIntervals[1]) {
       $('#time-indicator').attr('style', 'background-color: rgba(246, 255, 0, 0.2);');
     } else if (timeElapsed > level.maxTimeIntervals[2]) {
-      $('#time-indicator').attr('style', 'background-color: rgba(255, 81, 0, 0.4);');
+      $('#time-indicator').attr('style', 'background-color: rgba(255, 230, 0, 0.4);');
     } else if (timeElapsed > level.maxTimeIntervals[3]) {
-      $('#time-indicator').attr('style', 'background-color: rgba(255, 0, 0, 0.6);');
+      $('#time-indicator').attr('style', 'background-color: rgba(255, 81, 0, 0.6);');
+    } else if (timeElapsed >= 0) {
+      $('#time-indicator').attr('style', 'background-color: rgba(255, 0, 0, 0.8);');
     }
 
     let milisecondCounter = Math.floor((timeElapsed % 1000)/10);
