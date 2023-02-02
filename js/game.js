@@ -142,7 +142,6 @@ var game = {
       db.collection("highscore").add({
         name: $('#highscore-name-input')[0].value,
         points: game.totalPoints(),
-        badges: game.badges
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);
