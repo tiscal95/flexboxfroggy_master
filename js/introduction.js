@@ -24,12 +24,12 @@ var tutorial_text = {
         'de': 'Wenn dein Code korrekt ist, klicke hier, um zum nächsten Level zu kommen.'
     }, 
     'info-tutorial-time': {
-        'en': 'Every level will a time limit. Once you start the the level, you can not stop the clock. If you finish the game within the time give, you will get extra points depending on your speed.',
+        'en': 'Every level has a time limit. Once you start the level, you can not stop the countdown. If you finish the game within the given time, you will get extra points depending on your speed.',
         'de': 'Jedes Level hat ein Zeitlimit. Wenn du ein Level einmal gestartet hast, kannst du die Zeit nicht mehr stoppen. Wenn du das Level innerhalb des Zeitlimits beendest, bekommst du je nach Geschwindigkeit Bonuspunkte.'
     }, 
     'info-tutorial-badges': {
-        'en': 'You can obtain several badges throughout the game depending on how well you perform.',
-        'de': 'Du kannst während des Spiels verschiedene Badges verdienen.'
+        'en': 'You can obtain several badges throughout the game depending on how well you perform. If you want to get more info about each badge move your cursor over the badges.',
+        'de': 'Du kannst während des Spiels verschiedene Badges verdienen. Wenn du mehr Infos zu den Badges sehen willst, bewege den Mauszeiger über die Badges.'
     },
     'info-tutorial-intro': {
         'en': 'This part gives you some extra info that helps you with solving the level.',

@@ -51,9 +51,11 @@ strong {
   min-height: 300px;
   max-width: 100vh;
   max-height: 100vh;
+  background-color: #1F5768;
   overflow: hidden;
-  background-image: url("../images/map.png");
+  background-image: url("../images/welcome.png");
   background-size: contain;
+  background-position: center;
   background-repeat: no-repeat;
 }
 

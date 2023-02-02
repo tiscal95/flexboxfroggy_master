@@ -5,4 +5,6 @@ var sounds = {
     'lost': new Audio('../audio/lost.wav'),
     'background': new Audio('../audio/background.mp3'),
     'badge': new Audio('../audio/badge.mp3'),
+    'win': new Audio('../audio/win.mp3'),
+    'jump': new Audio('../audio/jump.mp3'),
 }

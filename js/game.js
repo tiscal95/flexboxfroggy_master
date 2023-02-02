@@ -27,7 +27,6 @@ var game = {
   remainingLives: (localStorage.remainingLives && JSON.parse(localStorage.remainingLives)) || {},
   points: (localStorage.points && JSON.parse(localStorage.points)) || {},
   badges: (localStorage.badges && JSON.parse(localStorage.badges)) || [],
-  badgesProgress: {},
   gameWin: (localStorage.gameWin && JSON.parse(localStorage.gameWin)) || 'false',
   gameLose: (localStorage.gameLose && JSON.parse(localStorage.gameLose)) || 'false',
   gameQuit: (localStorage.gameQuit && JSON.parse(localStorage.gameQuit)) || 'false',
@@ -143,6 +142,7 @@ var game = {
       db.collection("highscore").add({
         name: $('#highscore-name-input')[0].value,
         points: game.totalPoints(),
+        badges: game.badges
       })
       .then((docRef) => {
         console.log("Document written with ID: ", docRef.id);
@@ -167,6 +167,7 @@ var game = {
 
     $('#end').on('click', function() {
       const level = levels[game.level]
+      sounds.background.pause();
       game.gameFinish(3);
       game.levelEndTimer();
       game.saveToLocalStorage();
@@ -227,7 +228,6 @@ var game = {
           game.gameFinish(2);
           game.saveToDatabase();
           sounds.background.pause();
-          sounds.lost.play();
         }
 
         if (!$('.frog').hasClass('animated')) {
@@ -255,6 +255,10 @@ var game = {
       game.pageTimes[level.name] = game.pageEndTimes[level.name] - game.pageStartTimes[level.name]
       $(this).removeClass('animated animation'); 
       $('.frog').addClass('animated bounceOutUp');
+
+      setTimeout(function() {
+        sounds.jump.play();
+      }, 800);
 
       setTimeout(function() {
         game.saveToDatabase();
@@ -848,16 +852,19 @@ var game = {
     game.setBadges();
 
     if(game.gameWin == 'true') {
+      sounds.win.play();
       game.showFinishScreen(true);
       this.setUpBoard(levelWin);
     }
 
     if(game.gameLose == 'true') {
+      sounds.lost.play();
       game.showLoseScreen(true);
       this.setUpBoard(levelLose);
     }
 
     if(game.gameQuit == 'true') {
+      sounds.lost.play();
       game.showQuitScreen(true);
       this.setUpBoard(levelLose);
     }
