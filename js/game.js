@@ -75,6 +75,8 @@ var game = {
       sounds.lost.volume = 0.5;
       sounds.background.volume = 0.5;
       sounds.badge.volume = 0.5;
+      sounds.win.volume = 0.5;
+      sounds.jump.volume = 0.5;
     } else {
       sounds.shake.volume = 0;
       sounds.correct.volume = 0;
@@ -82,6 +84,8 @@ var game = {
       sounds.lost.volume = 0;
       sounds.background.volume = 0;
       sounds.badge.volume = 0;
+      sounds.win.volume = 0;
+      sounds.jump.volume = 0;
     }
 
     this.setHandlers();
