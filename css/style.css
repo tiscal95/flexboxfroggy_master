@@ -597,6 +597,7 @@ pre {
 #labelSettings {
   position: relative;
   z-index: 300;
+  cursor: pointer;
 }
 
 .caret {
@@ -746,6 +747,7 @@ button#check:not(.disabled):hover {
 
 #settings {
   position: relative;
+  cursor: pointer;
 }
 
 .toggle {
