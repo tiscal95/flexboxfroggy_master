@@ -8,3 +8,12 @@ var sounds = {
     'win': new Audio('../audio/win.mp3'),
     'jump': new Audio('../audio/jump.mp3'),
 }
+
+sounds.shake.preload;
+sounds.correct.preload;
+sounds.start.preload;
+sounds.lost.preload;
+sounds.background.preload;
+sounds.badge.preload;
+sounds.win.preload;
+sounds.jump.preload;
